@@ -9,6 +9,10 @@ const Usuario = connection.define('usuario', {
             len: {
                 msg: "O nome precisa ter entre 2 e 20 caracteres.",
                 args: [2, 20]
+            },
+            is: {
+                msg: "O nome deve conter somente letras.",
+                args: /^[A-Za-záàâãéèêíïóôõöúçÁÀÂÃÉÈÍÏÓÔÕÖÚÇ ]+$/
             }
         },
         allowNull: false
@@ -17,23 +21,36 @@ const Usuario = connection.define('usuario', {
         type: STRING,
         validate: {
             len: {
-                msg: "O nome precisa ter entre 2 e 20 caracteres.",
+                msg: "O sobrenome precisa ter entre 2 e 20 caracteres.",
                 args: [2, 20]
+            },
+            is: {
+                msg: "O sobrenome deve conter somente letras.",
+                args: /^[A-Za-záàâãéèêíïóôõöúçÁÀÂÃÉÈÍÏÓÔÕÖÚÇ ]+$/
             }
         },
         allowNull: false
     },
     genero: {
         type: STRING,
+        validate: {
+            is: {
+                msg: "O campo gênero deve conter somente letras.",
+                args: /^[A-Za-záàâãéèêíïóôõöúçÁÀÂÃÉÈÍÏÓÔÕÖÚ ]+$/
+            }
+        },
         allowNull: true
     },
     dataNasc: {
         type: DATE,
         validate: {
-            isDate: true,
-            isAfter: {
-                msg: "A data deve ser maior que a atual.",
-                args: new Date
+            isDate: {
+                msg: "Data de Nascimento deve estar no formato YYYY/MM/DD"
+            },
+            validaData(dataNasc) {
+                if (dataNasc > new Date) {
+                    throw Error("A data de nascimento deve ser menor que a data atual");
+                }
             }
         },
         allowNull: false
@@ -41,17 +58,32 @@ const Usuario = connection.define('usuario', {
     cpf: {
         type: STRING,
         validate: {
-            validarCpf(cpf) {
-                if (cpf.lenght !== 11) {
-                    throw new Error("O CPF deve conter 11 caracteres.")
-                }
+            len: {
+                msg: "O CPF deve conter 11 caracteres.",
+                args: [11, 11]
+            },
+            is: {
+                msg: "O CPF deve conter apenas números.",
+                args: /^[0-9]+$/
             }
         },
         allowNull: false,
-        unique: true
+        unique: {
+            msg: "O CPF já está cadastrado no sistema"
+        }
     },
     fone: {
         type: STRING,
+        validate: {
+            len: {
+                msg: "O número de telefone deve ter 10 caracteres.",
+                args: [10, 10]
+            },
+            is: {
+                msg: "O campo telefone deve conter apenas números.",
+                args: /^[0-9]+$/
+            }
+        },
         allowNull: true
     },
     email: {
@@ -66,9 +98,13 @@ const Usuario = connection.define('usuario', {
     senha: {
         type: STRING,
         validate: {
+            len: {
+                msg: "A senha deve conter entre 8 e 12 caracteres",
+                args: [8, 12]
+            },
             is: {
-                msg: "A senha deve conter no mínimo 8 e no máximo 12 caracteres, contendo 1 letra Maiúscula, 1 número e 1 caractere especial.",
-                args: /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])(?!.*\s).{8,10}$/
+                msg: "A senha deve conter 1 letra Maiúscula, 1 número e 1 caractere especial.",
+                args: /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()])(?!.*\s).{8,12}$/
             }
         },
         allowNull: false
