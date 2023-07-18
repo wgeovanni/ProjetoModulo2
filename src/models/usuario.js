@@ -1,4 +1,4 @@
-const { STRING, DATE, ENUM } = require('sequelize');
+const { STRING, DATE, ENUM, DATEONLY } = require('sequelize');
 const { connection } = require('../database/connection');
 
 const Usuario = connection.define('usuario', {
@@ -42,7 +42,7 @@ const Usuario = connection.define('usuario', {
         allowNull: true
     },
     dataNasc: {
-        type: DATE,
+        type: DATEONLY,
         validate: {
             isDate: {
                 msg: "Data de Nascimento deve estar no formato YYYY/MM/DD"
@@ -99,8 +99,8 @@ const Usuario = connection.define('usuario', {
         type: STRING,
         validate: {
             len: {
-                msg: "A senha deve conter entre 8 e 12 caracteres",
-                args: [8, 12]
+                msg: "A senha deve conter entre 8 e 10 caracteres",
+                args: [8, 10]
             },
             is: {
                 msg: "A senha deve conter 1 letra Maiúscula, 1 número e 1 caractere especial.",
@@ -112,12 +112,6 @@ const Usuario = connection.define('usuario', {
     status: {
         type: ENUM("Ativo", "Inativo"),
         defaultValue: "Ativo",
-        validate: {
-            isIn: {
-                msg: "Os valores possíveis são Ativo ou Inativo",
-                args: [["Ativo", "Inativo"]]
-            }
-        },
         allowNull: false
     },
     createdAt: {
