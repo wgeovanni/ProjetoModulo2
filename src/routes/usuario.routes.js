@@ -1,4 +1,4 @@
-const { createUser } = require('../controllers/usuario.controller');
+const { createUser, userLogin } = require('../controllers/usuario.controller');
 const { Router } = require('express');
 
 class UserRouter {
@@ -7,6 +7,7 @@ class UserRouter {
 
         const userRoutes = Router();
         userRoutes.post('/usuarios', createUser);
+        userRoutes.post('/usuarios/login', userLogin);
 
         return userRoutes;
     }
