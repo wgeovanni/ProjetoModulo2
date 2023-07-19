@@ -38,7 +38,19 @@ class UsuarioControler {
                 })
             }
 
+            if (!validateStringLenght(nome, 2, 50)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo nome deve conter entre 2 e 50 caracteres."
+                })
+            }
 
+            if (!validateOnlyLetters(nome)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo nome deve conter somente letras."
+                })
+            }
 
             // Campo sobrenome
             if (!sobrenome) {
@@ -48,7 +60,19 @@ class UsuarioControler {
                 })
             }
 
+            if (!validateStringLenght(sobrenome, 2, 50)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo sobrenome deve conter entre 2 e 50 caracteres."
+                })
+            }
 
+            if (!validateOnlyLetters(sobrenome)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo sobrenome deve conter somente letras."
+                })
+            }
 
             // Campo genero
             if (!validateOnlyLetters(genero)) {
@@ -66,7 +90,30 @@ class UsuarioControler {
                 });
             };
 
+            if (!validateDate(dataNasc)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo data de nascimento deve ser no formato YYYY/MM/DD."
+                })
+            }
 
+            const birth = moment(dataNasc, "YYYY/MM/DD");
+            const atual = moment();
+
+            if (birth > atual) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "A data de nascimento deve ser menor que a data atual."
+                })
+            }
+
+            const data18Years = birth.clone().add(18, 'y');
+            if (data18Years > atual) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "O usuário deve ser maior que 18 anos."
+                })
+            }
 
             // Campo CPF
             if (!cpf) {
@@ -90,8 +137,20 @@ class UsuarioControler {
                 })
             }
 
+            // Campo fone
+            if (fone && !validateOnlyNumbers(fone)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo telefone deve conter somente números."
+                })
+            }
 
-
+            if (!validateStringLenght(fone, 10, 11)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo telefone deve conter entre 10 e 11 números."
+                })
+            }
 
             // Campo email
             if (!email) {
@@ -101,7 +160,12 @@ class UsuarioControler {
                 })
             }
 
-
+            if (!validateEmail(email)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo email deve estar no formato exemplo@email.com"
+                })
+            }
 
             // Campo senha
             if (!senha) {
@@ -111,7 +175,40 @@ class UsuarioControler {
                 })
             }
 
+            if (!validateStringLenght(senha, 8, 10)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha deve conter entre 8 e 10 caracteres."
+                })
+            }
 
+            if (!validateOneUpperLetter(senha)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha deve conter pelo menos 1 letra maiúscula."
+                })
+            }
+
+            if (!validateOneNumber(senha)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha deve ter pelo menos 1 caractere numérico."
+                })
+            }
+
+            if (!validateOneSpecialChar(senha)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha deve conter pelo menos 1 caractere especial."
+                })
+            }
+
+            if (validateNoSpaces(senha)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha não deve conter espaços."
+                })
+            }
 
             // Campo status
             if (!status) {
@@ -121,7 +218,12 @@ class UsuarioControler {
                 })
             }
 
-
+            if (!validateStatus(status)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo status deve estar com o valor Ativo ou Inativo."
+                })
+            }
 
             // Verifica se o cpf já existe no banco de dados e retorna mensagem de erro caso exista
             const cpfDbExist = await Usuario.findOne({ where: { cpf } });
