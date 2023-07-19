@@ -10,6 +10,8 @@ const { validateOnlyLetters,
     validateDate,
     validateEmail,
     validateStatus } = require('../utils');
+const { config } = require('dotenv');
+const { sign } = require('jsonwebtoken');
 
 class UsuarioControler {
 
@@ -259,6 +261,80 @@ class UsuarioControler {
         } catch (error) {
             return res.status(400).send({ message: "Não foi possível criar novo usuário.", cause: error.message });
         }
+    }
+
+    async userLogin(req, res) {
+
+        const { email, senha } = req.body;
+
+        if (!email || !senha) {
+            return res.status(400).send({
+                msg: "Não foi possível efetuar o login!",
+                cause: "Campos email e senha são obrigatórios."
+            })
+        }
+
+        if (!validateEmail(email)) {
+            return res.status(400).send({
+                msg: "Não foi possível logar.",
+                cause: "Campo email deve estar no formato exemplo@email.com"
+            })
+        }
+
+        const existEmail = Usuario.findOne({ where: { email } });
+        if (!existEmail) {
+            return res.status(404).send({
+                msg: "Não foi possível efetuar o login!",
+                cause: "Email não consta no sistema."
+            })
+        }
+
+        if (!validateStringLenght(senha, 8, 10)) {
+            return res.status(400).send({
+                msg: "Não foi possível cadastrar usuário.",
+                cause: "Campo senha deve conter entre 8 e 10 caracteres."
+            })
+        }
+
+        if (!validateOneUpperLetter(senha)) {
+            return res.status(400).send({
+                msg: "Não foi possível cadastrar usuário.",
+                cause: "Campo senha deve conter pelo menos 1 letra maiúscula."
+            })
+        }
+
+        if (!validateOneNumber(senha)) {
+            return res.status(400).send({
+                msg: "Não foi possível cadastrar usuário.",
+                cause: "Campo senha deve ter pelo menos 1 caractere numérico."
+            })
+        }
+
+        if (!validateOneSpecialChar(senha)) {
+            return res.status(400).send({
+                msg: "Não foi possível cadastrar usuário.",
+                cause: "Campo senha deve conter pelo menos 1 caractere especial."
+            })
+        }
+
+        if (validateNoSpaces(senha)) {
+            return res.status(400).send({
+                msg: "Não foi possível cadastrar usuário.",
+                cause: "Campo senha não deve conter espaços."
+            })
+        }
+
+        if (senha !== existEmail.senha) {
+            return res.status(400).send({
+                msg: "Não foi possível efetuar o login!",
+                cause: "Email ou senha incorretos"
+            })
+        }
+
+        const payload = { ID: existEmail.id, email };
+        const token = sign(payload, process.env.SECRET_KEY, { expiresIn: '7d' });
+
+        return res.status(200).send(token);
     }
 };
 
