@@ -12,9 +12,13 @@ const { validateOnlyLetters,
     validateStatus } = require('../utils');
 const { config } = require('dotenv');
 const { sign } = require('jsonwebtoken');
+config();
 
+// Classe utilizada para representar a entidade usuario
 class UsuarioControler {
 
+    // Função utilizada para criação de usuário recebendo respectivamente os campos:
+    // nome, sobrenome, genero, data de nascimento, cpf, fone, email, senha e status
     async createUser(req, res) {
 
         try {
@@ -227,6 +231,8 @@ class UsuarioControler {
                 })
             }
 
+            //--------------------Fim de verificação de dados--------------------//
+
             // Verifica se o cpf já existe no banco de dados e retorna mensagem de erro caso exista
             const cpfDbExist = await Usuario.findOne({ where: { cpf } });
             if (cpfDbExist !== null) {
@@ -263,6 +269,7 @@ class UsuarioControler {
         }
     }
 
+    // Função para gerar token do usuário
     async userLogin(req, res) {
 
         const { email, senha } = req.body;
@@ -281,7 +288,7 @@ class UsuarioControler {
             })
         }
 
-        const existEmail = Usuario.findOne({ where: { email } });
+        const existEmail = await Usuario.findOne({ where: { email } });
         if (!existEmail) {
             return res.status(404).send({
                 msg: "Não foi possível efetuar o login!",
@@ -331,11 +338,12 @@ class UsuarioControler {
             })
         }
 
+        // Definição de payload e geração de token
         const payload = { ID: existEmail.id, email };
         const token = sign(payload, process.env.SECRET_KEY, { expiresIn: '7d' });
 
         return res.status(200).send(token);
     }
-};
+}
 
 module.exports = new UsuarioControler();
