@@ -272,77 +272,208 @@ class UsuarioControler {
     // Função para gerar token do usuário
     async userLogin(req, res) {
 
-        const { email, senha } = req.body;
+        try {
+            const { email, senha } = req.body;
 
-        if (!email || !senha) {
+            if (!email || !senha) {
+                return res.status(400).send({
+                    msg: "Não foi possível efetuar o login!",
+                    cause: "Campos email e senha são obrigatórios."
+                })
+            }
+
+            if (!validateEmail(email)) {
+                return res.status(400).send({
+                    msg: "Não foi possível logar.",
+                    cause: "Campo email deve estar no formato exemplo@email.com"
+                })
+            }
+
+            const existEmail = await Usuario.findOne({ where: { email } });
+            if (!existEmail) {
+                return res.status(404).send({
+                    msg: "Não foi possível efetuar o login!",
+                    cause: "Email não consta no sistema."
+                })
+            }
+
+            if (!validateStringLenght(senha, 8, 10)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha deve conter entre 8 e 10 caracteres."
+                })
+            }
+
+            if (!validateOneUpperLetter(senha)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha deve conter pelo menos 1 letra maiúscula."
+                })
+            }
+
+            if (!validateOneNumber(senha)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha deve ter pelo menos 1 caractere numérico."
+                })
+            }
+
+            if (!validateOneSpecialChar(senha)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha deve conter pelo menos 1 caractere especial."
+                })
+            }
+
+            if (validateNoSpaces(senha)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha não deve conter espaços."
+                })
+            }
+
+            if (senha !== existEmail.senha) {
+                return res.status(400).send({
+                    msg: "Não foi possível efetuar o login!",
+                    cause: "Email ou senha incorretos"
+                })
+            }
+
+            // Definição de payload e geração de token
+            const payload = { ID: existEmail.id, email };
+            const token = sign(payload, process.env.SECRET_KEY, { expiresIn: '7d' });
+
+            return res.status(200).send(token);
+        } catch (error) {
             return res.status(400).send({
-                msg: "Não foi possível efetuar o login!",
-                cause: "Campos email e senha são obrigatórios."
+                msg: "Não foi possível efetuar o login.",
+                cause: error.message
             })
         }
+    }
 
-        if (!validateEmail(email)) {
+    // Função utilizada para atualizar os dados do usuário.
+    // A definição do usuário a ser modificado é feita através de params da request
+    // Os dados que podem ser modificados são: nome, sobrenome, genero e telefone
+    // Passados através do body da request
+    async updateUser(req, res) {
+
+        try {
+            const { nome, sobrenome, genero, fone } = req.body;
+            const { id } = req.params;
+
+            if (!id) {
+                return res.status(400).send({
+                    msg: "Não é possível alterar usuário.",
+                    cause: "O ID do usuário é obrigatório."
+                })
+            }
+
+            if (!validateOnlyNumbers(id)) {
+                return res.status(400).send({
+                    msg: "Não é possível alterar o usuário.",
+                    cause: "ID do funcionário deve ser um número."
+                })
+            }
+
+            const existId = await Usuario.findByPk(id);
+            console.log(existId)
+            if (existId === null) {
+                return res.status(404).send({
+                    msg: "Não é possível alterar usuário.",
+                    cause: "O ID do usuário é inexistente."
+                })
+            }
+
+            // Campo nome
+            if (!nome) {
+                return res.status(400).send({
+                    msg: "Não foi possível modificar dados do usuário.",
+                    cause: "Campo nome obrigatório."
+                })
+            }
+
+            if (!validateStringLenght(nome, 2, 50)) {
+                return res.status(400).send({
+                    msg: "Não foi possível modificar dados do usuário.",
+                    cause: "Campo nome deve conter entre 2 e 50 caracteres."
+                })
+            }
+
+            if (!validateOnlyLetters(nome)) {
+                return res.status(400).send({
+                    msg: "Não foi possível modificar dados do usuário.",
+                    cause: "Campo nome deve conter somente letras."
+                })
+            }
+
+            // Campo sobrenome
+            if (!sobrenome) {
+                return res.status(400).send({
+                    msg: "Não foi possível modificar dados do usuário.",
+                    cause: "Campo sobrenome obrigatório."
+                })
+            }
+
+            if (!validateStringLenght(sobrenome, 2, 50)) {
+                return res.status(400).send({
+                    msg: "Não foi possível modificar dados do usuário.",
+                    cause: "Campo sobrenome deve conter entre 2 e 50 caracteres."
+                })
+            }
+
+            if (!validateOnlyLetters(sobrenome)) {
+                return res.status(400).send({
+                    msg: "Não foi possível modificar dados do usuário.",
+                    cause: "Campo sobrenome deve conter somente letras."
+                })
+            }
+
+            // Campo genero
+            if (!validateOnlyLetters(genero)) {
+                return res.status(400).send({
+                    msg: "Não foi possível modificar dados do usuário.",
+                    cause: "Campo gênero deve conter apenas letras."
+                })
+            }
+
+            // Campo fone
+            if (fone && !validateOnlyNumbers(fone)) {
+                return res.status(400).send({
+                    msg: "Não foi possível modificar dados do usuário.",
+                    cause: "Campo telefone deve conter somente números."
+                })
+            }
+
+            if (!validateStringLenght(fone, 10, 11)) {
+                return res.status(400).send({
+                    msg: "Não foi possível modificar dados do usuário.",
+                    cause: "Campo telefone deve conter entre 10 e 11 números."
+                })
+            }
+
+            const data = await Usuario.update(
+                {
+                    nome,
+                    sobrenome,
+                    genero,
+                    fone
+                },
+                {
+                    where: {
+                        id
+                    }
+                }
+            );
+
+            return res.status(200).send(data);
+
+        } catch (error) {
             return res.status(400).send({
-                msg: "Não foi possível logar.",
-                cause: "Campo email deve estar no formato exemplo@email.com"
+                msg: "Não foi possível alterar dados do usuário.",
+                cause: error.message
             })
         }
-
-        const existEmail = await Usuario.findOne({ where: { email } });
-        if (!existEmail) {
-            return res.status(404).send({
-                msg: "Não foi possível efetuar o login!",
-                cause: "Email não consta no sistema."
-            })
-        }
-
-        if (!validateStringLenght(senha, 8, 10)) {
-            return res.status(400).send({
-                msg: "Não foi possível cadastrar usuário.",
-                cause: "Campo senha deve conter entre 8 e 10 caracteres."
-            })
-        }
-
-        if (!validateOneUpperLetter(senha)) {
-            return res.status(400).send({
-                msg: "Não foi possível cadastrar usuário.",
-                cause: "Campo senha deve conter pelo menos 1 letra maiúscula."
-            })
-        }
-
-        if (!validateOneNumber(senha)) {
-            return res.status(400).send({
-                msg: "Não foi possível cadastrar usuário.",
-                cause: "Campo senha deve ter pelo menos 1 caractere numérico."
-            })
-        }
-
-        if (!validateOneSpecialChar(senha)) {
-            return res.status(400).send({
-                msg: "Não foi possível cadastrar usuário.",
-                cause: "Campo senha deve conter pelo menos 1 caractere especial."
-            })
-        }
-
-        if (validateNoSpaces(senha)) {
-            return res.status(400).send({
-                msg: "Não foi possível cadastrar usuário.",
-                cause: "Campo senha não deve conter espaços."
-            })
-        }
-
-        if (senha !== existEmail.senha) {
-            return res.status(400).send({
-                msg: "Não foi possível efetuar o login!",
-                cause: "Email ou senha incorretos"
-            })
-        }
-
-        // Definição de payload e geração de token
-        const payload = { ID: existEmail.id, email };
-        const token = sign(payload, process.env.SECRET_KEY, { expiresIn: '7d' });
-
-        return res.status(200).send(token);
     }
 }
 

@@ -1,4 +1,4 @@
-const { createUser, userLogin } = require('../controllers/usuario.controller');
+const { createUser, userLogin, updateUser } = require('../controllers/usuario.controller');
 const { Router } = require('express');
 
 class UserRouter {
@@ -8,6 +8,7 @@ class UserRouter {
         const userRoutes = Router();
         userRoutes.post('/usuarios', createUser);
         userRoutes.post('/usuarios/login', userLogin);
+        userRoutes.patch('/usuarios/:id', updateUser);
 
         return userRoutes;
     }
