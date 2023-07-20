@@ -19,6 +19,7 @@ class UsuarioControler {
 
     // Função utilizada para criação de usuário recebendo respectivamente os campos:
     // nome, sobrenome, genero, data de nascimento, cpf, fone, email, senha e status
+    // Caso passe pelas validações cria novo usuário no banco de dados
     async createUser(req, res) {
 
         try {
@@ -106,6 +107,7 @@ class UsuarioControler {
             const birth = moment(dataNasc, "YYYY/MM/DD");
             const atual = moment();
 
+            // Verifica se a data de nascimento do usuário é menor que a atual
             if (birth > atual) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar usuário.",
@@ -113,6 +115,7 @@ class UsuarioControler {
                 })
             }
 
+            // Clona a data de nascimento em uma variável e verifica se o usuário é tem mais que 18 anos
             const data18Years = birth.clone().add(18, 'y');
             if (data18Years > atual) {
                 return res.status(400).send({
@@ -234,8 +237,8 @@ class UsuarioControler {
             //--------------------Fim de verificação de dados--------------------//
 
             // Verifica se o cpf já existe no banco de dados e retorna mensagem de erro caso exista
-            const cpfDbExist = await Usuario.findOne({ where: { cpf } });
-            if (cpfDbExist !== null) {
+            const userCpfExist = await Usuario.findOne({ where: { cpf } });
+            if (userCpfExist !== null) {
                 return res.status(409).send({ msg: "CPF já cadastrado." });
             };
 
@@ -269,12 +272,14 @@ class UsuarioControler {
         }
     }
 
-    // Função para gerar token do usuário
+    // Função para gerar token do usuário recebendo respectivamente email e senha
+    // Caso passe pelas validações devolve um token
     async userLogin(req, res) {
 
         try {
             const { email, senha } = req.body;
 
+            // Validações de campo email
             if (!email || !senha) {
                 return res.status(400).send({
                     msg: "Não foi possível efetuar o login!",
@@ -289,14 +294,16 @@ class UsuarioControler {
                 })
             }
 
-            const existEmail = await Usuario.findOne({ where: { email } });
-            if (!existEmail) {
+            // Verifica se o email existe no banco de dados
+            const userEmailExist = await Usuario.findOne({ where: { email, status: "Ativo" } });
+            if (!userEmailExist) {
                 return res.status(404).send({
                     msg: "Não foi possível efetuar o login!",
                     cause: "Email não consta no sistema."
                 })
             }
 
+            // Validações de campo senha
             if (!validateStringLenght(senha, 8, 10)) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar usuário.",
@@ -332,7 +339,8 @@ class UsuarioControler {
                 })
             }
 
-            if (senha !== existEmail.senha) {
+            // Verifica se a recebida pela requisição é igual a do banco de dados
+            if (senha !== userEmailExist.senha) {
                 return res.status(400).send({
                     msg: "Não foi possível efetuar o login!",
                     cause: "Email ou senha incorretos"
@@ -340,7 +348,7 @@ class UsuarioControler {
             }
 
             // Definição de payload e geração de token
-            const payload = { ID: existEmail.id, email };
+            const payload = { ID: userEmailExist.id, email };
             const token = sign(payload, process.env.SECRET_KEY, { expiresIn: '7d' });
 
             return res.status(200).send(token);
@@ -362,6 +370,7 @@ class UsuarioControler {
             const { nome, sobrenome, genero, fone } = req.body;
             const { id } = req.params;
 
+            // Validações de parâmetro id
             if (!id) {
                 return res.status(400).send({
                     msg: "Não é possível alterar usuário.",
@@ -376,8 +385,9 @@ class UsuarioControler {
                 })
             }
 
-            const existId = await Usuario.findByPk(id);
-            if (existId === null) {
+            // Verifica a existência do id recebido por params no banco de dados
+            const userIdExist = await Usuario.findByPk(id);
+            if (userIdExist === null) {
                 return res.status(404).send({
                     msg: "Não é possível alterar usuário.",
                     cause: "O ID do usuário é inexistente."
@@ -435,6 +445,7 @@ class UsuarioControler {
                     cause: "Campo gênero deve conter apenas letras."
                 })
             }
+
             // Campo fone
             if (fone && !validateOnlyNumbers(fone)) {
                 return res.status(400).send({
@@ -470,6 +481,58 @@ class UsuarioControler {
         } catch (error) {
             return res.status(400).send({
                 msg: "Não foi possível alterar dados do usuário.",
+                cause: error.message
+            })
+        }
+    }
+
+    async updateUserStatus(req, res) {
+
+        try {
+
+            const { status } = req.body;
+            const { id } = req.params;
+
+            // Validações de id recebido no params
+            if (!validateOnlyNumbers(id)) {
+                return res.status(400).send({
+                    msg: "Não é possível alterar o usuário.",
+                    cause: "ID do funcionário deve ser um número."
+                })
+            }
+
+            // Verifica se id recebido em params existe no banco de dados
+            const userIdExist = await Usuario.findByPk(id);
+            console.log(userIdExist)
+            if (!userIdExist) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar os dados.",
+                    cause: "ID do usuário inexistente."
+                })
+            }
+
+            // Validação de campo status
+            if (!status) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar status do usuário.",
+                    cause: "O campo status é obrigatório."
+                })
+            }
+
+            if (!validateStatus(status)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo status deve estar com o valor Ativo ou Inativo."
+                })
+            }
+
+            // Realiza a atualização no banco de dados
+            await Usuario.update({ status }, { where: { id } });
+
+            return res.status(200).send();
+        } catch (error) {
+            return res.status(400).send({
+                msg: "Não foi possível atualizar status do usuário.",
                 cause: error.message
             })
         }
