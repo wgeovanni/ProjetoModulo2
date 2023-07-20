@@ -377,7 +377,6 @@ class UsuarioControler {
             }
 
             const existId = await Usuario.findByPk(id);
-            console.log(existId)
             if (existId === null) {
                 return res.status(404).send({
                     msg: "Não é possível alterar usuário.",
@@ -436,7 +435,6 @@ class UsuarioControler {
                     cause: "Campo gênero deve conter apenas letras."
                 })
             }
-
             // Campo fone
             if (fone && !validateOnlyNumbers(fone)) {
                 return res.status(400).send({
@@ -445,14 +443,15 @@ class UsuarioControler {
                 })
             }
 
-            if (!validateStringLenght(fone, 10, 11)) {
+            if (fone && !validateStringLenght(fone, 10, 11)) {
                 return res.status(400).send({
                     msg: "Não foi possível modificar dados do usuário.",
                     cause: "Campo telefone deve conter entre 10 e 11 números."
                 })
             }
 
-            const data = await Usuario.update(
+            // Atualiza dados no banco de dados
+            await Usuario.update(
                 {
                     nome,
                     sobrenome,
@@ -466,7 +465,7 @@ class UsuarioControler {
                 }
             );
 
-            return res.status(200).send(data);
+            return res.status(200).send();
 
         } catch (error) {
             return res.status(400).send({

@@ -76,8 +76,8 @@ const Usuario = connection.define('usuario', {
         type: STRING,
         validate: {
             len: {
-                msg: "O número de telefone deve ter 10 caracteres.",
-                args: [10, 10]
+                msg: "O número de telefone deve ter 10 ou 11 caracteres.",
+                args: [10, 11]
             },
             is: {
                 msg: "O campo telefone deve conter apenas números.",
