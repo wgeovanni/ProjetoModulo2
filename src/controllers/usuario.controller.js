@@ -503,9 +503,8 @@ class UsuarioControler {
 
             // Verifica se id recebido em params existe no banco de dados
             const userIdExist = await Usuario.findByPk(id);
-            console.log(userIdExist)
             if (!userIdExist) {
-                return res.status(400).send({
+                return res.status(404).send({
                     msg: "Não foi possível atualizar os dados.",
                     cause: "ID do usuário inexistente."
                 })
@@ -533,6 +532,82 @@ class UsuarioControler {
         } catch (error) {
             return res.status(400).send({
                 msg: "Não foi possível atualizar status do usuário.",
+                cause: error.message
+            })
+        }
+    }
+
+    async updateUserPassword(req, res) {
+
+        try {
+            const { id } = req.params;
+            const { senha } = req.body;
+
+            if (!validateOnlyNumbers(id)) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar a senha do usuário.",
+                    cause: "ID do usário deve ser do tipo numérico."
+                })
+            }
+
+            // Verifica se ID do usuário existe no banco de dados
+            const userIdExist = await Usuario.findByPk(id);
+            if (!userIdExist) {
+                return res.status(404).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "ID de usuário inexistente."
+                })
+            }
+
+            // Validações de senha
+            if (!senha) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar a senha do usuário.",
+                    cause: "Campo senha é obrigatório."
+                })
+            }
+
+            if (!validateStringLenght(senha, 8, 10)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha deve conter entre 8 e 10 caracteres."
+                })
+            }
+
+            if (!validateOneUpperLetter(senha)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha deve conter pelo menos 1 letra maiúscula."
+                })
+            }
+
+            if (!validateOneNumber(senha)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha deve ter pelo menos 1 caractere numérico."
+                })
+            }
+
+            if (!validateOneSpecialChar(senha)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha deve conter pelo menos 1 caractere especial."
+                })
+            }
+
+            if (validateNoSpaces(senha)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar usuário.",
+                    cause: "Campo senha não deve conter espaços."
+                })
+            }
+
+            await Usuario.update({ senha }, { where: { id } });
+
+            return res.status(200).send();
+        } catch (error) {
+            return res.status(400).send({
+                msg: "Não foi possível cadastrar usuário.",
                 cause: error.message
             })
         }
