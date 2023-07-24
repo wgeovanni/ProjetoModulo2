@@ -494,6 +494,10 @@ class UsuarioControler {
         }
     }
 
+    // Função utilizada para atualizar o status do usuário
+    // A definição do usuário a ser modificado é feita através de params da request
+    // Os dados que podem ser modificados são: status
+    // Passados através do body da request
     async updateUserStatus(req, res) {
 
         try {
@@ -545,6 +549,10 @@ class UsuarioControler {
         }
     }
 
+    // Função utilizada para atualizar a senha do usuário
+    // A definição do usuário a ser modificado é feita através de params da request
+    // Os dados que podem ser modificados são: senha
+    // Passados através do body da request
     async updateUserPassword(req, res) {
 
         try {
@@ -621,6 +629,8 @@ class UsuarioControler {
         }
     }
 
+    // Função utilizada para listar os dados de um usuário específico usuário
+    // A definição do usuário cuja informações serão disponibilizadas é feita através de params da request
     async listOneUser(req, res) {
 
         try {
