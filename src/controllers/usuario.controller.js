@@ -618,6 +618,7 @@ class UsuarioControler {
                 })
             }
 
+            //Atualiza dados do usuário no banco de dados
             await Usuario.update({ senha }, { where: { id } });
 
             return res.status(200).send();
@@ -636,6 +637,7 @@ class UsuarioControler {
         try {
             const { id } = req.params;
 
+            // Validações de ID
             if (!validateOnlyNumbers(id)) {
                 return res.status(400).send({
                     msg: "Não foi possível listar dados do usuário.",
@@ -643,6 +645,7 @@ class UsuarioControler {
                 })
             }
 
+            // Verifica a existência da ID no banco de dados
             const userIdExist = await Usuario.findOne({ where: { id } });
             if (!userIdExist) {
                 return res.status(404).send({
@@ -651,6 +654,7 @@ class UsuarioControler {
                 })
             }
 
+            // Variável enviada como resposta
             const data = {
                 "nome": userIdExist.dataValues.nome,
                 "sobrenome": userIdExist.dataValues.sobrenome,
