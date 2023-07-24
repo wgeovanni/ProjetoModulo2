@@ -1,5 +1,6 @@
 const { INTEGER, STRING, DATE, ENUM } = require('sequelize');
 const { connection } = require('../database/connection');
+const { Usuario } = require('./usuario');
 
 const Deposito = connection.define('deposito', {
 
@@ -23,7 +24,10 @@ const Deposito = connection.define('deposito', {
                 args: /^[A-Za-záàâãéèêíïóôõöúçÁÀÂÃÉÈÍÏÓÔÕÖÚÇ ]+$/
             }
         },
-        allowNull: false
+        allowNull: false,
+        unique: {
+            string: "A razão social já consta no banco de dados,"
+        }
     },
     cnpj: {
         type: Sequelize.STRING,
@@ -127,7 +131,7 @@ const Deposito = connection.define('deposito', {
         validate: {
             len: {
                 string: "O campo bairro deve conter entre 2 e 40 caracteres.",
-                args: [2, 50]
+                args: [2, 40]
             },
         },
         allowNull: false
@@ -162,6 +166,12 @@ const Deposito = connection.define('deposito', {
     },
     complemento: {
         type: Sequelize.STRING,
+        validate: {
+            len: {
+                string: "O campo complemento deve conter entre 2 e 50 caracteres.",
+                args: [2, 50]
+            }
+        },
         allowNull: true
     },
     latitude: {
@@ -190,5 +200,7 @@ const Deposito = connection.define('deposito', {
         allowNull: true
     }
 }, { underscored: true, paranoid: true });
+
+Deposito.belongsTo(Usuario);
 
 module.exports = { Deposito };

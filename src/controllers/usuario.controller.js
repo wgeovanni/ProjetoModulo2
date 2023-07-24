@@ -145,6 +145,11 @@ class UsuarioControler {
                     cause: "Campo CPF deve conter 11 caracteres."
                 })
             }
+            // Verifica se o cpf já existe no banco de dados e retorna mensagem de erro caso exista
+            const userCpfExist = await Usuario.findOne({ where: { cpf } });
+            if (userCpfExist !== null) {
+                return res.status(409).send({ msg: "CPF já cadastrado." });
+            }
 
             // Campo fone
             if (fone && !validateOnlyNumbers(fone)) {
@@ -235,12 +240,6 @@ class UsuarioControler {
             }
 
             //--------------------Fim de verificação de dados--------------------//
-
-            // Verifica se o cpf já existe no banco de dados e retorna mensagem de erro caso exista
-            const userCpfExist = await Usuario.findOne({ where: { cpf } });
-            if (userCpfExist !== null) {
-                return res.status(409).send({ msg: "CPF já cadastrado." });
-            };
 
             // Insere os dados na tabela
             const data = await Usuario.create({
