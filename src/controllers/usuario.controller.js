@@ -295,11 +295,19 @@ class UsuarioControler {
             }
 
             // Verifica se o email existe no banco de dados
-            const userEmailExist = await Usuario.findOne({ where: { email, status: "Ativo" } });
+            const userEmailExist = await Usuario.findOne({ where: { email } });
+            console.log(userEmailExist)
             if (!userEmailExist) {
                 return res.status(404).send({
                     msg: "Não foi possível efetuar o login!",
                     cause: "Email não consta no sistema."
+                })
+            }
+
+            if (userEmailExist.dataValues.status === "Inativo") {
+                return res.status(404).send({
+                    msg: "Não foi possível efetuar o login!",
+                    cause: "Usuário está inativo."
                 })
             }
 
@@ -608,6 +616,48 @@ class UsuarioControler {
         } catch (error) {
             return res.status(400).send({
                 msg: "Não foi possível cadastrar usuário.",
+                cause: error.message
+            })
+        }
+    }
+
+    async listOneUser(req, res) {
+
+        try {
+            const { id } = req.params;
+
+            if (!validateOnlyNumbers(id)) {
+                return res.status(400).send({
+                    msg: "Não foi possível listar dados do usuário.",
+                    cause: "ID do funcionário deve ser um número."
+                })
+            }
+
+            const userIdExist = await Usuario.findOne({ where: { id } });
+            if (!userIdExist) {
+                return res.status(404).send({
+                    msg: "Não foi possível listar dados do usuário.",
+                    cause: "ID do funcionário não existe."
+                })
+            }
+
+            const data = {
+                "nome": userIdExist.dataValues.nome,
+                "sobrenome": userIdExist.dataValues.sobrenome,
+                "genero": userIdExist.dataValues.genero,
+                "dataNasc": userIdExist.dataValues.dataNasc,
+                "cpf": userIdExist.dataValues.cpf,
+                "fone": userIdExist.dataValues.fone,
+                "email": userIdExist.dataValues.email,
+                "status": userIdExist.dataValues.status,
+                "createdAt": userIdExist.dataValues.createdAt,
+                "updatedAt": userIdExist.dataValues.updatedAt
+            }
+            return res.status(200).send(data);
+
+        } catch (error) {
+            return res.status(400).send({
+                msg: "Não foi possível listar os dados do usuário.",
                 cause: error.message
             })
         }
