@@ -1,5 +1,5 @@
 const { Deposito } = require('../models/deposito');
-const { validateEmail, validateOnlyNumbers, validateOnlyLetters, validateStringLenght } = require('../utils');
+const { validateEmail, validateOnlyNumbers, validateOnlyLetters, validateStringLenght, validateStatus } = require('../utils');
 const { config } = require('dotenv');
 const { Usuario } = require('../models/usuario');
 config();
@@ -528,6 +528,66 @@ class DepositoController {
         } catch (error) {
             return res.status(400).send({
                 msg: "Não foi possível atualizar os dados do depósito.",
+                cause: error.message
+            })
+        }
+    }
+
+    async updateDepositoStatus(req, res) {
+        try {
+
+            const { id } = req.params;
+            const { status } = req.body;
+
+            // ------------------------------ Verificações de campos ------------------------------//
+
+            // Campo ID de depósito
+            if (!id) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar o status do depósito.",
+                    cause: "O id do depósito passado por params é obrigatório."
+                })
+            }
+
+            if (!validateOnlyNumbers(id)) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar o status do depósito.",
+                    cause: "O id do depósito passado por params deve ser um número."
+                })
+            }
+
+            // Verifica a existência do depósito no banco de dados
+            const depositoIdExist = await Deposito.findOne({ where: { id } });
+            if (!depositoIdExist) {
+                return res.status(404).send({
+                    msg: "Não foi possível atualizar o status do depósito.",
+                    cause: "O id do depósito não existe."
+                })
+            }
+
+            // Validação de campo status
+            if (!status) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar o status do depósito.",
+                    cause: "O campo status é obrigatório."
+                })
+            }
+
+            if (!validateStatus(status)) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar o status do depósito.",
+                    cause: "Campo status deve estar com o valor Ativo ou Inativo."
+                })
+            }
+
+            // Realiza a atualização no banco de dados
+            await Deposito.update({ status }, { where: { id } });
+
+            return res.status(200).send();
+
+        } catch (error) {
+            return res.status(400).send({
+                msg: "Não foi possível atualizar o status do depósito.",
                 cause: error.message
             })
         }
