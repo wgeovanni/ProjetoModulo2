@@ -295,7 +295,6 @@ class UsuarioControler {
 
             // Verifica se o email existe no banco de dados
             const userEmailExist = await Usuario.findOne({ where: { email } });
-            console.log(userEmailExist)
             if (!userEmailExist) {
                 return res.status(404).send({
                     msg: "Não foi possível efetuar o login!",

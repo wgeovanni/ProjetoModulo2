@@ -1,10 +1,10 @@
 const { createDeposito } = require('../controllers/deposito.controller');
-const { Router } = require('express');
 const { auth } = require('../middleware/auth');
+const { Router } = require('express');
 
 class DepositoRouter {
 
-    routesFormDeposito() {
+    routesFromDeposito() {
 
         const depositoRoutes = Router();
         depositoRoutes.post('/depositos', auth, createDeposito);

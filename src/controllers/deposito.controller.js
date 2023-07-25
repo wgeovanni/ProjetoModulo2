@@ -1,6 +1,5 @@
 const { Deposito } = require('../models/deposito');
 const { validateEmail, validateOnlyNumbers, validateOnlyLetters, validateStringLenght } = require('../utils');
-const { sign } = require('jsonwebtoken');
 const { config } = require('dotenv');
 const { Usuario } = require('../models/usuario');
 config();
@@ -26,8 +25,8 @@ class DepositoController {
                 cidade,
                 estado,
                 complemento,
-                lat,
-                long
+                latitude,
+                longitude
             } = req.body
 
             // ------------------------------ Verificações de campos ------------------------------//
@@ -47,11 +46,18 @@ class DepositoController {
                 })
             }
 
-            const userIdExists = Usuario.findByPk(userId);
+            const userIdExists = await Usuario.findOne({ where: { id: userId } });
             if (!userIdExists) {
-                res.status(400).send({
+                return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
                     cause: "O usuário é inexistente."
+                })
+            }
+
+            if (userIdExists.status === "Inativo") {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar novo depósito.",
+                    cause: "O usuário está inativo no sistema."
                 })
             }
 
@@ -77,8 +83,8 @@ class DepositoController {
                 })
             }
 
-            const razaoExist = Deposito.findOne({ where: { razao } });
-            if (!razaoExist) {
+            const razaoExist = await Deposito.findOne({ where: { razao } });
+            if (razaoExist) {
                 return res.status(409).send({
                     msg: "Não foi possível cadastrar novo depósito.",
                     cause: "Esta razão social já está cadastrada no sistema."
@@ -107,8 +113,8 @@ class DepositoController {
                 })
             }
 
-            const cnpjExist = Deposito.findOne({ where: { cnpj } });
-            if (!cnpjExist) {
+            const cnpjExist = await Deposito.findOne({ where: { cnpj } });
+            if (cnpjExist) {
                 return res.status(409).send({
                     msg: "Não foi possível cadastrar novo depósito.",
                     cause: "O CNPJ já consta no banco de dados."
@@ -145,14 +151,14 @@ class DepositoController {
             }
 
             // Campo fone
-            if (!validateOnlyNumbers(fone)) {
+            if (fone && !validateOnlyNumbers(fone)) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
                     cause: "O campo telefone deve conter apenas números."
                 })
             }
 
-            if (!validateStringLenght(fone, 8, 10)) {
+            if (fone && !validateStringLenght(fone, 8, 10)) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
                     cause: "O campo telefone deve conter entre 8 e 10 números."
@@ -167,17 +173,17 @@ class DepositoController {
                 })
             }
 
-            if (!validateStringLenght(celular, 10, 11)) {
-                return res.status(400).send({
-                    msg: "Não foi possível cadastrar novo depósito.",
-                    cause: "O campo celular deve conter entre 10 e 11 números."
-                })
-            }
-
             if (!validateOnlyNumbers(celular)) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
                     cause: "O campo celular deve conter somente números."
+                })
+            }
+
+            if (!validateStringLenght(celular, 10, 11)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar novo depósito.",
+                    cause: "O campo celular deve conter entre 10 e 11 números."
                 })
             }
 
@@ -189,17 +195,17 @@ class DepositoController {
                 })
             }
 
-            if (!validateStringLenght(cep, 8, 8)) {
-                return res.status(400).send({
-                    msg: "Não foi possível cadastrar novo depósito.",
-                    cause: "O campo CEP deve conter 8 números."
-                })
-            }
-
             if (!validateOnlyNumbers(cep)) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
                     cause: "O campo CEP deve conter somente números."
+                })
+            }
+
+            if (!validateStringLenght(cep, 8, 8)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar novo depósito.",
+                    cause: "O campo CEP deve conter 8 números."
                 })
             }
 
@@ -211,7 +217,7 @@ class DepositoController {
                 })
             }
 
-            if (validateStringLenght(endereco, 2, 50)) {
+            if (!validateStringLenght(endereco, 2, 50)) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
                     cause: "O campo endereço deve conter entre 2 e 50 caracteres."
@@ -241,6 +247,13 @@ class DepositoController {
                 })
             }
 
+            if (!validateOnlyLetters(bairro)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar novo depósito.",
+                    cause: "O campo bairro deve conter somente letras."
+                })
+            }
+
             if (!validateStringLenght(bairro, 2, 40)) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
@@ -253,6 +266,13 @@ class DepositoController {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
                     cause: "O campo cidade é obrigatório."
+                })
+            }
+
+            if (!validateOnlyLetters(cidade)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar novo depósito.",
+                    cause: "O campo cidade deve conter somente letras."
                 })
             }
 
@@ -271,6 +291,13 @@ class DepositoController {
                 })
             }
 
+            if (!validateOnlyLetters(estado)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar novo depósito.",
+                    cause: "O campo estado deve conter somente letras."
+                })
+            }
+
             if (!validateStringLenght(estado, 2, 20)) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
@@ -278,21 +305,24 @@ class DepositoController {
                 })
             }
 
-            if (!validateStringLenght(complemento)) {
+            // Campo complemento
+            if (complemento && !validateStringLenght(complemento, 2, 200)) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
-                    cause: "O campo complemento deve conter entre 2 e 50 caracteres."
+                    cause: "O campo complemento deve conter entre 2 e 200 caracteres."
                 })
             }
 
-            if (lat < -90 || lat > 90) {
+            // Campo latitude
+            if (latitude && latitude < -90 || latitude > 90) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
                     cause: "O campo latitude deve possuir valores entre -90 e 90."
                 })
             }
 
-            if (long < -180 || long > 180) {
+            // Campo longitude
+            if (longitude && longitude < -180 || longitude > 180) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
                     cause: "O campo longitude deve possuir valores entre -180 e 180"
@@ -316,11 +346,11 @@ class DepositoController {
                 cidade,
                 estado,
                 complemento,
-                lat,
-                long
+                latitude,
+                longitude
             })
 
-            return res.status(201).send(data.id, data);
+            return res.status(201).send(data);
         } catch (error) {
             return res.status(400).send({
                 msg: "Não foi possível cadastrar depósito.",

@@ -13,7 +13,7 @@ const Deposito = connection.define('deposito', {
         allowNull: false
     },
     razao: {
-        type: Sequelize.STRING,
+        type: STRING,
         validate: {
             len: {
                 msg: "A razão social deve ter entre 2 e 50 caracteres.",
@@ -30,7 +30,7 @@ const Deposito = connection.define('deposito', {
         }
     },
     cnpj: {
-        type: Sequelize.STRING,
+        type: STRING,
         validate: {
             len: {
                 msg: "O CNPJ deve conter 14 caracteres.",
@@ -43,7 +43,7 @@ const Deposito = connection.define('deposito', {
         }
     },
     nome: {
-        type: Sequelize.STRING,
+        type: STRING,
         validate: {
             len: {
                 msg: "O nome fantasia deve ter entre 2 e 50 caracteres.",
@@ -57,7 +57,7 @@ const Deposito = connection.define('deposito', {
         allowNull: false
     },
     email: {
-        type: Sequelize.STRING,
+        type: STRING,
         validate: {
             isEmail: {
                 string: "O campo email deve possuir o formato exemplo@email.com"
@@ -66,7 +66,7 @@ const Deposito = connection.define('deposito', {
         allowNull: false
     },
     fone: {
-        type: Sequelize.STRING,
+        type: STRING,
         validate: {
             len: {
                 msg: "O número de telefone deve ter entre 8 ou 10 caracteres.",
@@ -80,7 +80,7 @@ const Deposito = connection.define('deposito', {
         allowNull: true
     },
     celular: {
-        type: Sequelize.STRING,
+        type: STRING,
         validate: {
             len: {
                 msg: "O número de celular deve ter 10 ou 11 caracteres.",
@@ -94,7 +94,7 @@ const Deposito = connection.define('deposito', {
         allowNull: false
     },
     cep: {
-        type: Sequelize.STRING,
+        type: STRING,
         validate: {
             len: {
                 string: "O campo CEP deve ter 8 dígitos.",
@@ -108,7 +108,7 @@ const Deposito = connection.define('deposito', {
         allowNull: false
     },
     endereco: {
-        type: Sequelize.STRING,
+        type: STRING,
         validate: {
             len: {
                 string: "O campo endereço deve conter entre 2 e 50 caracteres.",
@@ -118,7 +118,7 @@ const Deposito = connection.define('deposito', {
         allowNull: false
     },
     numero: {
-        type: Sequelize.INTEGER,
+        type: INTEGER,
         validate: {
             isAlphanumeric: {
                 string: "O campo número deve conter somente números.",
@@ -127,7 +127,7 @@ const Deposito = connection.define('deposito', {
         allowNull: false
     },
     bairro: {
-        type: Sequelize.STRING,
+        type: STRING,
         validate: {
             len: {
                 string: "O campo bairro deve conter entre 2 e 40 caracteres.",
@@ -137,35 +137,27 @@ const Deposito = connection.define('deposito', {
         allowNull: false
     },
     cidade: {
-        type: Sequelize.STRING,
+        type: STRING,
         validate: {
             len: {
                 string: "O campo bairro deve conter entre 2 e 40 caracteres.",
                 args: [2, 50]
-            },
-            isAlpha: {
-                string: "O campo cidade deve conter somente letras.",
-                args: /^[A-Za-záàâãéèêíïóôõöúçÁÀÂÃÉÈÍÏÓÔÕÖÚÇ ]+$/
             }
         },
         allowNull: false
     },
     estado: {
-        type: Sequelize.STRING,
+        type: STRING,
         validate: {
             len: {
                 string: "O campo estado deve conter entre 2 e 20 caracteres.",
                 args: [2, 20]
-            },
-            isAlpha: {
-                string: "O campo estado deve conter somente letras.",
-                args: /^[A-Za-záàâãéèêíïóôõöúçÁÀÂÃÉÈÍÏÓÔÕÖÚÇ ]+$/
             }
         },
         allowNull: false
     },
     complemento: {
-        type: Sequelize.STRING,
+        type: STRING,
         validate: {
             len: {
                 string: "O campo complemento deve conter entre 2 e 50 caracteres.",
@@ -175,32 +167,30 @@ const Deposito = connection.define('deposito', {
         allowNull: true
     },
     latitude: {
-        type: Sequelize.STRING,
+        type: STRING,
         allowNull: true
     },
     longitude: {
-        type: Sequelize.STRING,
+        type: STRING,
         allowNull: true
     },
     status: {
-        type: Sequelize.ENUM("Ativo", "Inativo"),
+        type: ENUM("Ativo", "Inativo"),
         defaultValue: "Ativo",
         allowNull: false
     },
-    created_at: {
-        type: Sequelize.DATE,
+    createdAt: {
+        type: DATE,
         allowNull: false
     },
-    updated_at: {
-        type: Sequelize.DATE,
+    updatedAt: {
+        type: DATE,
         allowNull: false
     },
-    deleted_at: {
-        type: Sequelize.DATE,
+    deletedAt: {
+        type: DATE,
         allowNull: true
     }
 }, { underscored: true, paranoid: true });
-
-Deposito.belongsTo(Usuario);
 
 module.exports = { Deposito };
