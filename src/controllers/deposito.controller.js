@@ -7,6 +7,11 @@ config();
 // Classe utilizada para representar a entidade Deposito
 class DepositoController {
 
+    // Função para cadastro de novo depósito no sistema
+    // Recebe através do body da request os dados: userId, razao, cnpf, nome
+    // email, fone, celular, cep, endereco, numero, bairro, cidade, estado,
+    // complemento, latitude e longitude.
+    // Caso passe nas validações cadastra novo depósito
     async createDeposito(req, res) {
 
         try {
@@ -46,6 +51,7 @@ class DepositoController {
                 })
             }
 
+            // Verifica a existência do id do usuário no banco de dados
             const userIdExists = await Usuario.findOne({ where: { id: userId } });
             if (!userIdExists) {
                 return res.status(400).send({
@@ -54,6 +60,7 @@ class DepositoController {
                 })
             }
 
+            // Verifica se o usuário está com o status definido como inativo
             if (userIdExists.status === "Inativo") {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
@@ -83,6 +90,7 @@ class DepositoController {
                 })
             }
 
+            // Verifica se a razão social já está cadastrada no sistema
             const razaoExist = await Deposito.findOne({ where: { razao } });
             if (razaoExist) {
                 return res.status(409).send({
@@ -113,6 +121,7 @@ class DepositoController {
                 })
             }
 
+            // Verifica se o cnpj já está cadastrado no sistema
             const cnpjExist = await Deposito.findOne({ where: { cnpj } });
             if (cnpjExist) {
                 return res.status(409).send({
@@ -121,6 +130,7 @@ class DepositoController {
                 })
             }
 
+            // Campo nome
             if (!nome) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
