@@ -358,6 +358,170 @@ class DepositoController {
             })
         }
     }
+
+    async updateDeposito(req, res) {
+        try {
+
+            const { id } = req.params;
+            const { nome,
+                email,
+                fone,
+                celular,
+                cep,
+                endereco
+            } = req.body;
+
+            // ------------------------------ Verificações de campos ------------------------------//
+
+            // Campo ID de depósito
+            if (!id) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar os dados do depósito.",
+                    cause: "O id do depósito passado por params é obrigatório."
+                })
+            }
+
+            if (!validateOnlyNumbers(id)) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar os dados do depósito.",
+                    cause: "O id do depósito passado por params deve ser um número."
+                })
+            }
+
+            // Verifica a existência do depósito no banco de dados
+            const depositoIdExist = await Deposito.findOne({ where: { id } });
+            if (!depositoIdExist) {
+                return res.status(404).send({
+                    msg: "Não foi possível atualizar os dados do depósito.",
+                    cause: "O id do depósito não existe."
+                })
+            }
+
+            // Campo nome
+            if (!nome) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar os dados do depósito.",
+                    cause: "O campo nome fantasia é obrigatório."
+                })
+            }
+
+            if (!validateStringLenght(nome, 2, 50)) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar os dados do depósito.",
+                    cause: "O campo nome fantasia deve conter entre 2 e 50 caracteres."
+                })
+            }
+
+            // Campo email
+            if (!email) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar os dados do depósito.",
+                    cause: "O campo email é obrigatório."
+                })
+            }
+
+            if (!validateEmail(email)) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar os dados do depósito.",
+                    cause: "O campo email deve estar no padrão exemplo@email.com"
+                })
+            }
+
+            // Campo fone
+            if (fone && !validateOnlyNumbers(fone)) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar os dados do depósito.",
+                    cause: "O campo telefone deve conter apenas números."
+                })
+            }
+
+            if (fone && !validateStringLenght(fone, 8, 10)) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar os dados do depósito.",
+                    cause: "O campo telefone deve conter entre 8 e 10 números."
+                })
+            }
+
+            // Campo celular
+            if (!celular) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar os dados do depósito.",
+                    cause: "O campo celular é obrigatório."
+                })
+            }
+
+            if (!validateOnlyNumbers(celular)) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar os dados do depósito.",
+                    cause: "O campo celular deve conter somente números."
+                })
+            }
+
+            if (!validateStringLenght(celular, 10, 11)) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar os dados do depósito.",
+                    cause: "O campo celular deve conter entre 10 e 11 números."
+                })
+            }
+
+            // Campo cep
+            if (!cep) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar novo depósito.",
+                    cause: "O campo CEP é obrigatório."
+                })
+            }
+
+            if (!validateOnlyNumbers(cep)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar novo depósito.",
+                    cause: "O campo CEP deve conter somente números."
+                })
+            }
+
+            if (!validateStringLenght(cep, 8, 8)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar novo depósito.",
+                    cause: "O campo CEP deve conter 8 números."
+                })
+            }
+
+            // Campo endereço
+            if (!endereco) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar os dados do depósito.",
+                    cause: "O campo endereço é obrigatório."
+                })
+            }
+
+            if (!validateStringLenght(endereco, 2, 50)) {
+                return res.status(400).send({
+                    msg: "Não foi possível atualizar os dados do depósito.",
+                    cause: "O campo endereço deve conter entre 2 e 50 caracteres."
+                })
+            }
+
+            // Faz a atualização dos dados no banco de dados
+            await Deposito.update({
+                nome,
+                email,
+                fone,
+                celular,
+                endereco
+            }, {
+                where: {
+                    id
+                }
+            })
+
+            return res.status(204).send();
+        } catch (error) {
+            return res.status(400).send({
+                msg: "Não foi possível atualizar os dados do depósito.",
+                cause: error.message
+            })
+        }
+    }
 }
 
 module.exports = new DepositoController();
