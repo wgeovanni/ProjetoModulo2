@@ -2,6 +2,9 @@ const { createDeposito, updateDeposito, updateDepositoStatus, listDeposito, list
 const { auth } = require('../middleware/auth');
 const { Router } = require('express');
 
+// A rota de atualização de status de depósito pode afetar a deleção do depósito.
+// Devido a isso seria necessário que somente um usuário autorizado pudesse ter acesso
+// a este endpoint
 class DepositoRouter {
 
     routesFromDeposito() {
