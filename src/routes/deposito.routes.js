@@ -1,4 +1,4 @@
-const { createDeposito, updateDeposito, updateDepositoStatus } = require('../controllers/deposito.controller');
+const { createDeposito, updateDeposito, updateDepositoStatus, listDeposito } = require('../controllers/deposito.controller');
 const { auth } = require('../middleware/auth');
 const { Router } = require('express');
 
@@ -10,6 +10,7 @@ class DepositoRouter {
         depositoRoutes.post('/depositos', auth, createDeposito);
         depositoRoutes.patch('/depositos/:id', auth, updateDeposito);
         depositoRoutes.patch('/depositos/:id/status', auth, updateDepositoStatus);
+        depositoRoutes.get('/depositos', auth, listDeposito);
 
         return depositoRoutes;
     }

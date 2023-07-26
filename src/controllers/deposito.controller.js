@@ -608,6 +608,46 @@ class DepositoController {
             })
         }
     }
+
+    async listDeposito(req, res) {
+        try {
+
+            const { status } = req.query;
+
+            // Verifica se a query foi passada. Caso não tenha sido enviada retorna todos
+            // os depósitos cadastrados no sistema
+            if (!status) {
+                const data = await Deposito.findAll();
+                return res.status(200).send(data);
+            }
+            console.log("Chegou aqui")
+            // Verifica se o status passado por query é válido
+            if (status && !validateStatus(status)) {
+                return res.status(400).send({
+                    msg: "Não foi possível listar os depósitos.",
+                    cause: "O status enviado deve possuir os valores Ativo ou Inativo."
+                })
+            }
+
+            // Busca os dados de depósitos no banco de dados pelo status
+            const data = await Deposito.findAll({ where: { status } });
+
+            // Verifica se existem depósitos com o status passado
+            if (data.length === 0) {
+                return res.status(200).send({
+                    msg: `Não há depósitos com o status ${status} no banco de dados.`
+                })
+            }
+
+            return res.status(200).send(data);
+
+        } catch (error) {
+            return res.status(400).send({
+                msg: "Não foi possível listar os depósitos.",
+                cause: error.message
+            })
+        }
+    }
 }
 
 module.exports = new DepositoController();
