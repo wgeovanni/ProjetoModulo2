@@ -31,7 +31,8 @@ class DepositoController {
                 estado,
                 complemento,
                 latitude,
-                longitude
+                longitude,
+                status
             } = req.body
 
             // ------------------------------ Verificações de campos ------------------------------//
@@ -336,6 +337,21 @@ class DepositoController {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
                     cause: "O campo longitude deve possuir valores entre -180 e 180"
+                })
+            }
+
+            // Campo status
+            if (!status) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar novo depósito.",
+                    cause: "O campo status é obrigatório."
+                })
+            }
+
+            if (!validateStatus(status)) {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar novo depósito.",
+                    cause: "O campo status deve possuir os valores Ativo ou Inativo."
                 })
             }
 
