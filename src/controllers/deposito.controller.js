@@ -706,6 +706,56 @@ class DepositoController {
             })
         }
     }
+
+    async deleteDeposito(req, res) {
+        try {
+
+            const { id } = req.params;
+
+            // Validação de id
+            if (!id) {
+                return res.status(400).send({
+                    msg: "Não foi possível excluir o depósito.",
+                    cause: "O id do depósito é obrigatório."
+                })
+            }
+
+            if (!validateOnlyNumbers(id)) {
+                return res.status(400).send({
+                    msg: "Não foi possível excluir o depósito.",
+                    cause: "O id do depósito deve ser um número."
+                })
+            }
+
+            // Verifica se o id consta no banco de dados
+            const data = await Deposito.findByPk(id);
+            if (!data) {
+                return res.status(404).send({
+                    msg: "Não foi possível excluir o depósito.",
+                    cause: "O id informado não consta no banco de dados."
+                })
+            }
+
+            if (data.status === "Ativo") {
+                return res.status(400).send({
+                    msg: "Não foi possível excluir o depósito.",
+                    cause: "O status do depósito deve ser Inativo."
+
+                })
+            }
+
+            // Efetua a exclusão dos dados, caso a opção paranoid estiver habilitada
+            // Cria um timestamp no momento em que foi "deletado"
+            await Deposito.destroy({ where: { id } });
+            return res.status(204).send();
+
+        } catch (error) {
+            return res.status(400).send({
+                msg: "Não foi possível excluir o depósito.",
+                cause: error.message
+            })
+        }
+    }
 }
 
 module.exports = new DepositoController();
