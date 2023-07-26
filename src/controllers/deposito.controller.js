@@ -355,7 +355,7 @@ class DepositoController {
                 })
             }
 
-            //--------------------Fim de verificação de dados--------------------//
+            //--------------------Fim de verificação de campos--------------------//
 
             const data = await Deposito.create({
                 userId,
@@ -385,6 +385,10 @@ class DepositoController {
         }
     }
 
+    // Função utilizada para atualizar os dados do depósito.
+    // A definição do depósito a ser modificado é feita através de params da request
+    // Os dados que podem ser modificados são: nome, email, fone, celular, cep e endereço
+    // Passados através do body da request
     async updateDeposito(req, res) {
         try {
 
@@ -527,6 +531,8 @@ class DepositoController {
                 })
             }
 
+            // ------------------------------ Fim da  validação ------------------------------//
+
             // Faz a atualização dos dados no banco de dados
             await Deposito.update({
                 nome,
@@ -549,6 +555,10 @@ class DepositoController {
         }
     }
 
+    // Função utilizada para atualizar o dado de status do depósito.
+    // A definição do depósito a ser modificado é feita através de params da request
+    // Os dados que podem ser modificados são: status
+    // Passados através do body da request
     async updateDepositoStatus(req, res) {
         try {
 
@@ -595,6 +605,8 @@ class DepositoController {
                     cause: "Campo status deve estar com o valor Ativo ou Inativo."
                 })
             }
+
+            // ------------------------------ Fim de verificação de campos ------------------------------//
 
             // Realiza a atualização no banco de dados
             await Deposito.update({ status }, { where: { id } });
