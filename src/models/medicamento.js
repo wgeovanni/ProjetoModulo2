@@ -1,8 +1,21 @@
-const { STRING, DATE, ENUM, DECIMAL } = require('sequelize');
+const { STRING, DATE, ENUM, DECIMAL, INTEGER } = require('sequelize');
 const { connection } = require('../database/connection');
 
 const Medicamento = connection.define('medicamentos', {
 
+    userId: {
+        type: INTEGER,
+        validate: {
+            isNumeric: {
+                string: "O id do usuário deve ser um número."
+            }
+        },
+        references: {
+            model: 'usuarios',
+            key: id
+        },
+        allowNull: false
+    },
     medicamento: {
         type: STRING,
         validate: {
