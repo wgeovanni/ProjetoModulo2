@@ -2,7 +2,6 @@ const { STRING, DATE, ENUM, DECIMAL, INTEGER } = require('sequelize');
 const { connection } = require('../database/connection');
 
 const Medicamento = connection.define('medicamentos', {
-
     userId: {
         type: INTEGER,
         validate: {
@@ -12,7 +11,7 @@ const Medicamento = connection.define('medicamentos', {
         },
         references: {
             model: 'usuarios',
-            key: id
+            key: 'id'
         },
         allowNull: false
     },
@@ -33,22 +32,22 @@ const Medicamento = connection.define('medicamentos', {
                 string: "O nome do laboratório deve ter entre 2 e 80 caracteres.",
                 args: [2, 80]
             },
-            allowNull: false
         },
-        descricao: {
-            type: STRING,
-            allowNull: true
+        allowNull: false
+    },
+    descricao: {
+        type: STRING,
+        allowNull: true
+    },
+    dosagem: {
+        type: DECIMAL,
+        validate: {
+            isNumeric: true
         },
-        dosagem: {
-            type: DECIMAL,
-            validate: {
-                isNumeric: true
-            },
-            allowNull: false
-        }
+        allowNull: false
     },
     unDosagem: {
-        type: ENUM("mg", "mcg", "g", "mL", "%", "Outro"),
+        type: ENUM("mg", "mcg", "g", "ml", "%", "Outro"),
         allowNull: false
     },
     tipo: {
@@ -66,20 +65,17 @@ const Medicamento = connection.define('medicamentos', {
     },
     quantidade: {
         type: DECIMAL,
-        validate: {
-            string: "A quantidade deve ser em números."
-        },
         allowNull: false
     },
-    created_at: {
+    createdAt: {
         type: DATE,
         allowNull: false
     },
-    updated_at: {
+    updatedAt: {
         type: DATE,
         allowNull: false
     },
-    deleted_at: {
+    deletedAt: {
         type: DATE,
         allowNull: true
     }

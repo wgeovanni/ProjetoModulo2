@@ -113,6 +113,37 @@ class Utils {
             return false
         }
     }
+
+    // Função para verificar se a unidade de dosagem inserida exatamente os valores:
+    // mg, mcg, g, mL ou Outro
+    // Recebe uma string como parâmetro e devolve true ou false.
+    validateUnDosagem(value) {
+        const regex = /^(mg|mcg|g|ml|%|Outro)$/
+        if (regex.test(value)) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    // Função para verificar se o tipo de medicamento inserido é exatamente os valores:
+    // Medicamento controlado ou Medicamento não controlado.
+    // Recebe uma string como parâmetro e devolve true ou false.
+    validateTipo(value) {
+        const regex = /^(Medicamento controlado|Medicamento não controlado)$/
+        if (regex.test(value)) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    // Função para formatar o valor com no máximo duas casas após a vírgula
+    // Recebe um valor como parâmetro e devolve true ou false.
+    formatNumber(value) {
+        const newValue = (Math.round(value * 100) / 100).toFixed(2);
+        return newValue;
+    }
 }
 
 // Exportação da instanciação da classe
