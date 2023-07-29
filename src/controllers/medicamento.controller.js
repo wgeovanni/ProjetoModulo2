@@ -222,6 +222,10 @@ class MedicamentoController {
         }
     }
 
+    // Função para atualização de dados de medicamento no sistema
+    // Recebe através de params o id do medicamento a ser alterado.
+    // Recebe pelo body da request os dados: descrição, preço, e quantidade
+    // Caso passe nas validações altera os dados do medicamento
     async updateMedicamento(req, res) {
         try {
             const { id } = req.params;
@@ -332,6 +336,53 @@ class MedicamentoController {
         } catch (error) {
             return res.status(400).send({
                 msg: "Não foi possível alterar os dados do medicamento.",
+                cause: error.message
+            })
+        }
+    }
+
+    // Função que serve para listar os medicamentos cadastrados no banco de dados
+    // Recebe através de query params a opção de filtrar por tipo de medicamento:
+    // controlado ou naocontrolado, caso nada seja passado, devolve uma lista com ambos
+    // Retorna uma lista com os medicamentos
+    async listMedicamentos(req, res) {
+        try {
+            const { tipo } = req.query;
+
+            // Verifica o tipo de medicamento e retorna uma lista com os medicamentos
+            switch (tipo) {
+                case "CONTROLADO":
+                    const dataControl = await Medicamento.findAll({ where: { tipo: "Medicamento controlado" } });
+                    if (dataControl.length === 0) {
+                        return res.status(200).send({
+                            msg: "Não existem medicamentos do tipo controlado no banco de dados"
+                        });
+                    }
+                    return res.status(200).send(dataControl);
+
+                case "NAOCONTROLADO":
+                    const dataNotControl = await Medicamento.findAll({ where: { tipo: "Medicamento não controlado" } });
+                    if (dataNotControl.length === 0) {
+                        return res.status(200).send({
+                            msg: "Não existem medicamentos do tipo não controlado no banco de dados"
+                        });
+                    }
+                    return res.status(200).send(dataNotControl);
+
+                case undefined:
+                    const data = await Medicamento.findAll();
+                    return res.status(200).send(data);
+
+                default:
+                    return res.status(400).send({
+                        msg: "Não foi possível listar os medicamentos.",
+                        cause: "A query deve receber o valor CONTROLADO ou NAOCONTROLADO"
+                    });
+            }
+
+        } catch (error) {
+            return res.status(400).send({
+                msg: "Não foi possível listar medicamentos.",
                 cause: error.message
             })
         }

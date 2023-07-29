@@ -636,7 +636,6 @@ class DepositoController {
                 const data = await Deposito.findAll();
                 return res.status(200).send(data);
             }
-            console.log("Chegou aqui")
             // Verifica se o status passado por query é válido
             if (status && !validateStatus(status)) {
                 return res.status(400).send({
