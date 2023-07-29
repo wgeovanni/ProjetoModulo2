@@ -355,8 +355,9 @@ class DepositoController {
                 })
             }
 
-            //--------------------Fim de verificação de campos--------------------//
+            //-----------------------------Fim de verificação de dados-----------------------------//
 
+            // Criação de novo depósito no banco de dados
             const data = await Deposito.create({
                 userId,
                 razao,
@@ -386,7 +387,7 @@ class DepositoController {
     }
 
     // Função utilizada para atualizar os dados do depósito.
-    // A definição do depósito a ser modificado é feita através de params da request
+    // A definição do depósito a ser modificado é feita através do id passado pelo params da request
     // Os dados que podem ser modificados são: nome, email, fone, celular, cep e endereço
     // Passados através do body da request
     async updateDeposito(req, res) {
@@ -401,7 +402,7 @@ class DepositoController {
                 endereco
             } = req.body;
 
-            // ------------------------------ Verificações de campos ------------------------------//
+            //------------------------------ Verificações de campos ------------------------------//
 
             // Campo ID de depósito
             if (!id) {
@@ -531,7 +532,7 @@ class DepositoController {
                 })
             }
 
-            // ------------------------------ Fim da  validação ------------------------------//
+            //-----------------------------Fim de verificação de dados-----------------------------//
 
             // Faz a atualização dos dados no banco de dados
             await Deposito.update({
@@ -556,7 +557,7 @@ class DepositoController {
     }
 
     // Função utilizada para atualizar o dado de status do depósito.
-    // A definição do depósito a ser modificado é feita através de params da request
+    // A definição do depósito a ser modificado é feita através id passado pelo params da request
     // Os dados que podem ser modificados são: status
     // Passados através do body da request
     async updateDepositoStatus(req, res) {
@@ -622,9 +623,8 @@ class DepositoController {
     }
 
     // Função utilizada para listar os depósitos.
-    // É possível filtrar os depósitos através de params da request
-    // Os dados que podem ser modificados são: status
-    // Passados através do body da request
+    // É possível filtrar os depósitos através de query params da request
+    // Envia os dados buscados no banco de dados
     async listDeposito(req, res) {
         try {
 
@@ -735,6 +735,7 @@ class DepositoController {
                 })
             }
 
+            // Verifica se o status do depósito está com Ativo
             if (data.status === "Ativo") {
                 return res.status(400).send({
                     msg: "Não foi possível excluir o depósito.",

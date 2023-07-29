@@ -200,6 +200,7 @@ class MedicamentoController {
             const formatedPreco = formatNumber(preco);
             const formatedQuantidade = formatNumber(quantidade);
 
+            // Cria novo medicamento no banco de dados
             const data = await Medicamento.create({
                 userId,
                 medicamento,
@@ -315,6 +316,7 @@ class MedicamentoController {
             const formatedPreco = formatNumber(preco);
             const formatedQuantidade = formatNumber(quantidade);
 
+            // Atualização dos dados no banco de dados
             await Medicamento.update({
                 descricao,
                 preco,
@@ -343,13 +345,13 @@ class MedicamentoController {
 
     // Função que serve para listar os medicamentos cadastrados no banco de dados
     // Recebe através de query params a opção de filtrar por tipo de medicamento:
-    // controlado ou naocontrolado, caso nada seja passado, devolve uma lista com ambos
-    // Retorna uma lista com os medicamentos
+    // CONTROLADO ou NAOCONTROLADO, caso nada seja passado, devolve uma lista com todos
+    // os medicamentos
     async listMedicamentos(req, res) {
         try {
             const { tipo } = req.query;
 
-            // Verifica o tipo de medicamento e retorna uma lista com o respectivo tipo
+            // Verifica os tipos de medicamentos e retorna uma lista com o respectivo tipo
             switch (tipo) {
                 case "CONTROLADO":
                     const dataControl = await Medicamento.findAll({ where: { tipo: "Medicamento controlado" } });
@@ -369,10 +371,13 @@ class MedicamentoController {
                     }
                     return res.status(200).send(dataNotControl);
 
+                // Caso a query params tipo não seja informada envia uma lista de
+                // todos os medicamentos
                 case undefined:
                     const data = await Medicamento.findAll();
                     return res.status(200).send(data);
 
+                // Por padrão envia mensagem com os valores aceitos na query params
                 default:
                     return res.status(400).send({
                         msg: "Não foi possível listar os medicamentos.",
@@ -461,7 +466,8 @@ class MedicamentoController {
                 })
             }
 
-            // Efetua a exclusão do medicamento
+            // Efetua a exclusão dos dados, caso a opção paranoid estiver habilitada
+            // Cria um timestamp no momento em que foi "deletado"
             await Medicamento.destroy({ where: { id } });
 
             return res.status(204).send();

@@ -35,7 +35,7 @@ class UsuarioControler {
                 senha,
                 status } = req.body;
 
-            // ------------------------------ Verificações de campos ------------------------------//
+            //------------------------------ Verificações de campos ------------------------------//
 
             // Campo nome
             if (!nome) {
@@ -145,6 +145,7 @@ class UsuarioControler {
                     cause: "Campo CPF deve conter 11 caracteres."
                 })
             }
+
             // Verifica se o cpf já existe no banco de dados e retorna mensagem de erro caso exista
             const userCpfExist = await Usuario.findOne({ where: { cpf } });
             if (userCpfExist !== null) {
@@ -239,9 +240,9 @@ class UsuarioControler {
                 })
             }
 
-            //--------------------Fim de verificação de dados--------------------//
+            //----------------------------Fim de verificação de dados-----------------------------//
 
-            // Insere os dados na tabela
+            // Criação de novo usuário no banco de dados
             const data = await Usuario.create({
                 nome,
                 sobrenome,
@@ -277,6 +278,8 @@ class UsuarioControler {
 
         try {
             const { email, senha } = req.body;
+
+            //------------------------------ Verificações de campos ------------------------------//
 
             // Validações de campo email
             if (!email || !senha) {
@@ -345,13 +348,15 @@ class UsuarioControler {
                 })
             }
 
-            // Verifica se a recebida pela requisição é igual a do banco de dados
+            // Verifica se a senha recebida pela requisição é igual a do banco de dados
             if (senha !== userEmailExist.senha) {
                 return res.status(400).send({
                     msg: "Não foi possível efetuar o login!",
                     cause: "Email ou senha incorretos"
                 })
             }
+
+            //-----------------------------Fim de verificação de dados-----------------------------//
 
             // Definição de payload e geração de token
             const payload = { ID: userEmailExist.id, email };
@@ -367,7 +372,7 @@ class UsuarioControler {
     }
 
     // Função utilizada para atualizar os dados do usuário.
-    // A definição do usuário a ser modificado é feita através de params da request
+    // A definição do usuário a ser modificado é feita através do id passado pelo params da request
     // Os dados que podem ser modificados são: nome, sobrenome, genero e telefone
     // Passados através do body da request
     async updateUser(req, res) {
@@ -375,6 +380,8 @@ class UsuarioControler {
         try {
             const { nome, sobrenome, genero, fone } = req.body;
             const { id } = req.params;
+
+            //------------------------------ Verificações de campos ------------------------------//
 
             // Validações de parâmetro id
             if (!id) {
@@ -467,6 +474,8 @@ class UsuarioControler {
                 })
             }
 
+            //-----------------------------Fim de verificação de dados-----------------------------//
+
             // Atualiza dados no banco de dados
             await Usuario.update(
                 {
@@ -493,7 +502,7 @@ class UsuarioControler {
     }
 
     // Função utilizada para atualizar o status do usuário
-    // A definição do usuário a ser modificado é feita através de params da request
+    // A definição do usuário a ser modificado é feita através do id passado pelo params da request
     // Os dados que podem ser modificados são: status
     // Passados através do body da request
     async updateUserStatus(req, res) {
@@ -502,6 +511,8 @@ class UsuarioControler {
 
             const { status } = req.body;
             const { id } = req.params;
+
+            //------------------------------ Verificações de campos ------------------------------//
 
             // Validações de id recebido no params
             if (!validateOnlyNumbers(id)) {
@@ -535,6 +546,8 @@ class UsuarioControler {
                 })
             }
 
+            //-----------------------------Fim de verificação de dados-----------------------------//
+
             // Realiza a atualização no banco de dados
             await Usuario.update({ status }, { where: { id } });
 
@@ -548,7 +561,7 @@ class UsuarioControler {
     }
 
     // Função utilizada para atualizar a senha do usuário
-    // A definição do usuário a ser modificado é feita através de params da request
+    // A definição do usuário a ser modificado é feita através do id passado pelo params da request
     // Os dados que podem ser modificados são: senha
     // Passados através do body da request
     async updateUserPassword(req, res) {
@@ -556,6 +569,8 @@ class UsuarioControler {
         try {
             const { id } = req.params;
             const { senha } = req.body;
+
+            //------------------------------ Verificações de campos ------------------------------//
 
             if (!validateOnlyNumbers(id)) {
                 return res.status(400).send({
@@ -616,6 +631,8 @@ class UsuarioControler {
                 })
             }
 
+            //-----------------------------Fim de verificação de dados-----------------------------//
+
             //Atualiza dados do usuário no banco de dados
             await Usuario.update({ senha }, { where: { id } });
 
@@ -628,8 +645,9 @@ class UsuarioControler {
         }
     }
 
-    // Função utilizada para listar os dados de um usuário específico usuário
-    // A definição do usuário cuja informações serão disponibilizadas é feita através de params da request
+    // Função utilizada para listar os dados de um usuário específico
+    // A definição do usuário cuja informações serão disponibilizadas é feita através
+    // do id passado pelo params da request
     async listOneUser(req, res) {
 
         try {
