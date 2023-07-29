@@ -349,7 +349,7 @@ class MedicamentoController {
         try {
             const { tipo } = req.query;
 
-            // Verifica o tipo de medicamento e retorna uma lista com os medicamentos
+            // Verifica o tipo de medicamento e retorna uma lista com o respectivo tipo
             switch (tipo) {
                 case "CONTROLADO":
                     const dataControl = await Medicamento.findAll({ where: { tipo: "Medicamento controlado" } });
@@ -425,6 +425,49 @@ class MedicamentoController {
         } catch (error) {
             return res.status(400).send({
                 msg: "Não foi possível listar os dados do medicamento.",
+                cause: error.message
+            })
+        }
+    }
+
+    // Função para deleção de medicamento no banco de dados
+    // Recebe no params a id do medicamento e caso exista no banco de dados, exclui
+    async deleteMedicamento(req, res) {
+        try {
+
+            const { id } = req.params;
+
+            // Verificações do params id
+            if (!id) {
+                return res.status(400).send({
+                    msg: "Não foi possível deletar o medicamento.",
+                    cause: "O params id é obrigatório."
+                })
+            }
+
+            if (!validateOnlyNumbers(id)) {
+                return res.status(400).send({
+                    msg: "Não foi possível deletar o medicamento.",
+                    cause: "O id deve ser um numeral."
+                })
+            }
+
+            // Verifica se o id consta no banco de dados
+            const idExist = await Medicamento.findByPk(id);
+            if (idExist === null) {
+                return res.status(400).send({
+                    msg: "Não foi possível deletar o medicamento.",
+                    cause: "Id do medicamento não consta no banco de dados."
+                })
+            }
+
+            // Efetua a exclusão do medicamento
+            await Medicamento.destroy({ where: { id } });
+
+            return res.status(204).send();
+        } catch (error) {
+            return res.status(400).send({
+                msg: "Não foi possível deletar o medicamento.",
                 cause: error.message
             })
         }
