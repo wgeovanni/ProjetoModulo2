@@ -387,6 +387,48 @@ class MedicamentoController {
             })
         }
     }
+
+    // Função utilizada para listar um medicamento.
+    // A definição do medicamento a ser listado é feita através de seu ID 
+    // passado pelo params da request
+    // Caso seja validado o id é enviada uma resposta com os dados do medicamento
+    async listOneMedicamento(req, res) {
+        try {
+
+            const { id } = req.params;
+
+            // Validação de id
+            if (!id) {
+                return res.status(400).send({
+                    msg: "Não foi possível listar os dados do medicamento.",
+                    cause: "O id do medicamento é obrigatório."
+                })
+            }
+
+            if (!validateOnlyNumbers(id)) {
+                return res.status(400).send({
+                    msg: "Não foi possível listar os dados do medicamento.",
+                    cause: "O id do medicamento deve ser um número."
+                })
+            }
+
+            // Verifica se o id consta no banco de dados
+            const data = await Medicamento.findByPk(id);
+            if (!data) {
+                return res.status(404).send({
+                    msg: "Não foi possível listar os dados do medicamento.",
+                    cause: "O id informado não consta no banco de dados."
+                })
+            }
+
+            return res.status(200).send(data);
+        } catch (error) {
+            return res.status(400).send({
+                msg: "Não foi possível listar os dados do medicamento.",
+                cause: error.message
+            })
+        }
+    }
 }
 
 module.exports = new MedicamentoController();

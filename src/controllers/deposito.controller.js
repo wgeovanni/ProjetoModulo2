@@ -664,7 +664,7 @@ class DepositoController {
         }
     }
 
-    // Função utilizada para lista um depósito.
+    // Função utilizada para listar um depósito.
     // A definição do depósito a ser listado é feita através de seu ID 
     // passado pelo params da request
     // Caso seja validado o id é enviada uma resposta com os dados do depósito
@@ -700,7 +700,7 @@ class DepositoController {
             return res.status(200).send(data);
         } catch (error) {
             return res.status(400).send({
-                msg: "Não foi possível listar os dados.",
+                msg: "Não foi possível listar os dados do depósito.",
                 cause: error.message
             })
         }
