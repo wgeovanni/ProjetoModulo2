@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { auth } = require('../middleware/auth');
-const { createMedicamento } = require('../controllers/medicamento.controller');
+const { createMedicamento, updateMedicamento } = require('../controllers/medicamento.controller');
 
 class MedicamentoRouter {
 
@@ -8,6 +8,7 @@ class MedicamentoRouter {
 
         const medicamentoRoutes = Router();
         medicamentoRoutes.post('/medicamentos', auth, createMedicamento);
+        medicamentoRoutes.patch('/medicamentos/:id', auth, updateMedicamento)
 
         return medicamentoRoutes;
     }

@@ -4,6 +4,10 @@ const { validateOnlyNumbers, validateStringLenght, validateUnDosagem, validateTi
 
 class MedicamentoController {
 
+    // Função para cadastro de novo medicamento no sistema
+    // Recebe através do body da request os dados: userId, medicamento,laboratorio,
+    // descricao, dosagem, unDosagem, tipo, preco, quantidade
+    // Caso passe nas validações cadastra novo medicamento
     async createMedicamento(req, res) {
         try {
 
@@ -189,6 +193,8 @@ class MedicamentoController {
                 }
             }
 
+            // ------------------------------ Fim de verificação de campos ------------------------//
+
             // Deixa o valor recebido no formato de duas casas decimais após a vírgula
             const formatedDosagem = formatNumber(dosagem);
             const formatedPreco = formatNumber(preco);
@@ -206,13 +212,126 @@ class MedicamentoController {
                 quantidade: formatedQuantidade
             })
 
-            console.log(unDosagem)
             return res.status(201).send(data);
 
-            // ------------------------------ Fim de verificação de campos ------------------------//
         } catch (error) {
             return res.status(400).send({
                 msg: "Não foi possível cadastrar medicamento.",
+                cause: error.message
+            })
+        }
+    }
+
+    async updateMedicamento(req, res) {
+        try {
+            const { id } = req.params;
+            const { descricao, preco, quantidade } = req.body;
+
+            // ------------------------------ Verificações de campos ------------------------------//
+
+            // Verifica o id
+            if (!id) {
+                return res.status(400).send({
+                    msg: "Não foi possível alterar os dados do medicamento.",
+                    cause: "O id do medicamento é obrigatório no params."
+                })
+            }
+
+            if (!validateOnlyNumbers(id)) {
+                return res.status(400).send({
+                    msg: "Não foi possível alterar os dados do medicamento.",
+                    cause: "O id do medicamento deve conter apenas números."
+                })
+            }
+
+            // Verifica se o id consta no banco de dados
+            const idExist = await Medicamento.findByPk(id);
+            if (idExist === null) {
+                return res.status(404).send({
+                    msg: "Não foi possível alterar os dados do medicamento.",
+                    cause: "O id não esta cadastrado no banco de dados."
+                })
+            }
+
+            // Verifica campo descricao
+            if (descricao && !validateStringLenght(descricao, 5, 500)) {
+                return res.status(400).send({
+                    msg: "Não foi possível alterar os dados do medicamento.",
+                    cause: "O campo descricao deve conter entre 5 e 500 caracteres."
+                })
+            }
+
+            // Verifica campo preço
+            if (!preco) {
+                return res.status(400).send({
+                    msg: "Não foi possível alterar os dados do medicamento.",
+                    cause: "O campo preco é obrigatório."
+                })
+            }
+
+            if (isNaN(preco)) {
+                return res.status(400).send({
+                    msg: "Não foi possível alterar os dados do medicamento.",
+                    cause: "O campo preco deve conter apenas números."
+                })
+            }
+
+            if (preco <= 0) {
+                return res.status(400).send({
+                    msg: "Não foi possível alterar os dados do medicamento.",
+                    cause: "O campo preco deve conter valores maior que zero."
+                })
+            }
+
+            // Verifica o campo quantidade
+            if (!quantidade) {
+                return res.status(400).send({
+                    msg: "Não foi possível alterar os dados do medicamento.",
+                    cause: "O campo quantidade é obrigatório."
+                })
+            }
+
+            if (isNaN(quantidade)) {
+                return res.status(400).send({
+                    msg: "Não foi possível alterar os dados do medicamento.",
+                    cause: "O campo quantidade deve conter apenas números."
+                })
+            }
+
+            if (quantidade <= 0) {
+                return res.status(400).send({
+                    msg: "Não foi possível alterar os dados do medicamento.",
+                    cause: "O campo quantidade deve conter valores maior que zero."
+                })
+            }
+
+            // ------------------------------ Fim de verificação de campos ------------------------//
+
+            // Formatação de campos numericos
+            const formatedPreco = formatNumber(preco);
+            const formatedQuantidade = formatNumber(quantidade);
+
+            await Medicamento.update({
+                descricao,
+                preco,
+                quantidade
+            }, {
+                where: { id }
+            })
+
+            // Dados a serem retornados
+            const data = await Medicamento.findOne({ where: { id } });
+
+            return res.status(200).send({
+                "id": data.id,
+                "descricao": data.descricao,
+                "preco": data.preco,
+                "quantidade": data.quantidade
+            })
+
+        } catch (error) {
+            return res.status(400).send({
+                msg: "Não foi possível alterar os dados do medicamento.",
                 cause: error.message
             })
         }
