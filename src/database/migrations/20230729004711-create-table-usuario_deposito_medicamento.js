@@ -15,29 +15,38 @@ module.exports = {
       usuario_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'usuarios',
+          model: {
+            tableName: 'usuarios'
+          },
           key: 'id'
         },
         allowNull: false,
-        onUpdate: 'CASCADE'
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       deposito_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'depositos',
+          model: {
+            tableName: 'depositos'
+          },
           key: 'id'
         },
         allowNull: false,
-        onUpdate: 'CASCADE'
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       medicamento_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'medicamentos',
+          model: {
+            tableName: 'medicamentos'
+          },
           key: 'id'
         },
         allowNull: false,
-        onUpdate: 'CASCADE'
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       quantidade: {
         type: Sequelize.DECIMAL,
