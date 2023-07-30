@@ -1,8 +1,9 @@
 const { STRING, DATE, ENUM, DECIMAL, INTEGER } = require('sequelize');
 const { connection } = require('../database/connection');
+const { Usuario } = require('./usuario');
 
 const Medicamento = connection.define('medicamentos', {
-    userId: {
+    usuarioId: {
         type: INTEGER,
         validate: {
             isNumeric: {
@@ -80,5 +81,7 @@ const Medicamento = connection.define('medicamentos', {
         allowNull: true
     }
 }, { underscored: true, paranoid: true })
+
+Medicamento.belongsTo(Usuario);
 
 module.exports = { Medicamento };

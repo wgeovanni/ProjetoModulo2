@@ -6,13 +6,13 @@ const { validateOnlyNumbers, validateStringLenght, validateUnDosagem, validateTi
 class MedicamentoController {
 
     // Função para cadastro de novo medicamento no sistema
-    // Recebe através do body da request os dados: userId, medicamento,laboratorio,
+    // Recebe através do body da request os dados: usuarioId, medicamento,laboratorio,
     // descricao, dosagem, unDosagem, tipo, preco, quantidade
     // Caso passe nas validações cadastra novo medicamento
     async createMedicamento(req, res) {
         try {
 
-            const { userId,
+            const { usuarioId,
                 medicamento,
                 laboratorio,
                 descricao,
@@ -24,15 +24,15 @@ class MedicamentoController {
 
             // ------------------------------ Verificações de campos ------------------------------//
 
-            // Campo userID
-            if (!userId) {
+            // Campo usuarioId
+            if (!usuarioId) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar o medicamento.",
                     cause: "O id do usuário é obrigatório."
                 })
             }
 
-            if (!validateOnlyNumbers(userId)) {
+            if (!validateOnlyNumbers(usuarioId)) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar o medicamento.",
                     cause: "O id do usuário deve conter somente números."
@@ -40,11 +40,19 @@ class MedicamentoController {
             }
 
             // Verifica se o id do usuário consta no banco de dados
-            const userIdExist = await Usuario.findByPk(userId);
-            if (!userIdExist) {
+            const usuarioIdExist = await Usuario.findOne({ where: { id: usuarioId } });
+            if (!usuarioIdExist) {
                 return res.status(404).send({
                     msg: "Não foi possível cadastrar o medicamento.",
                     cause: "O id do usuário não existe."
+                })
+            }
+
+            // Verifica se o usuário está com o status definido como inativo
+            if (usuarioIdExist.status === "Inativo") {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar novo depósito.",
+                    cause: "O usuário está inativo no sistema."
                 })
             }
 
@@ -216,7 +224,7 @@ class MedicamentoController {
             // banco de dados. Caso ja existiu atualiza os dados. Retorna os dados.
             if (medicamentoExistBefore === 0) {
                 const data = await Medicamento.create({
-                    userId,
+                    usuarioId,
                     medicamento,
                     laboratorio,
                     descricao,
@@ -229,7 +237,7 @@ class MedicamentoController {
                 return res.status(201).send(data);
             } else {
                 await Medicamento.update({
-                    userId,
+                    usuarioId,
                     medicamento,
                     laboratorio,
                     descricao,
@@ -247,7 +255,7 @@ class MedicamentoController {
 
             // Dados a serem enviados
             const data = {
-                userId,
+                usuarioId,
                 medicamento,
                 laboratorio,
                 descricao,

@@ -399,8 +399,8 @@ class UsuarioControler {
             }
 
             // Verifica a existência do id recebido por params no banco de dados
-            const userIdExist = await Usuario.findByPk(id);
-            if (userIdExist === null) {
+            const usuarioId = await Usuario.findByPk(id);
+            if (usuarioId === null) {
                 return res.status(404).send({
                     msg: "Não é possível alterar usuário.",
                     cause: "O ID do usuário é inexistente."
@@ -523,8 +523,8 @@ class UsuarioControler {
             }
 
             // Verifica se id recebido em params existe no banco de dados
-            const userIdExist = await Usuario.findByPk(id);
-            if (!userIdExist) {
+            const usuarioId = await Usuario.findByPk(id);
+            if (!usuarioId) {
                 return res.status(404).send({
                     msg: "Não foi possível atualizar os dados.",
                     cause: "ID do usuário inexistente."
@@ -580,8 +580,8 @@ class UsuarioControler {
             }
 
             // Verifica se ID do usuário existe no banco de dados
-            const userIdExist = await Usuario.findByPk(id);
-            if (!userIdExist) {
+            const usuarioId = await Usuario.findByPk(id);
+            if (!usuarioId) {
                 return res.status(404).send({
                     msg: "Não foi possível cadastrar usuário.",
                     cause: "ID de usuário inexistente."
@@ -662,8 +662,8 @@ class UsuarioControler {
             }
 
             // Verifica a existência da ID no banco de dados
-            const userIdExist = await Usuario.findOne({ where: { id } });
-            if (!userIdExist) {
+            const usuarioIdExist = await Usuario.findOne({ where: { id } });
+            if (!usuarioIdExist) {
                 return res.status(404).send({
                     msg: "Não foi possível listar dados do usuário.",
                     cause: "ID do funcionário não existe."
@@ -672,16 +672,16 @@ class UsuarioControler {
 
             // Variável enviada como resposta
             const data = {
-                "nome": userIdExist.dataValues.nome,
-                "sobrenome": userIdExist.dataValues.sobrenome,
-                "genero": userIdExist.dataValues.genero,
-                "dataNasc": userIdExist.dataValues.dataNasc,
-                "cpf": userIdExist.dataValues.cpf,
-                "fone": userIdExist.dataValues.fone,
-                "email": userIdExist.dataValues.email,
-                "status": userIdExist.dataValues.status,
-                "createdAt": userIdExist.dataValues.createdAt,
-                "updatedAt": userIdExist.dataValues.updatedAt
+                "nome": usuarioIdExist.dataValues.nome,
+                "sobrenome": usuarioIdExist.dataValues.sobrenome,
+                "genero": usuarioIdExist.dataValues.genero,
+                "dataNasc": usuarioIdExist.dataValues.dataNasc,
+                "cpf": usuarioIdExist.dataValues.cpf,
+                "fone": usuarioIdExist.dataValues.fone,
+                "email": usuarioIdExist.dataValues.email,
+                "status": usuarioIdExist.dataValues.status,
+                "createdAt": usuarioIdExist.dataValues.createdAt,
+                "updatedAt": usuarioIdExist.dataValues.updatedAt
             }
             return res.status(200).send(data);
 

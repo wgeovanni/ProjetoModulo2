@@ -4,14 +4,15 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
 
-    await queryInterface.addColumn('medicamentos', 'user_id', {
+    await queryInterface.addColumn('medicamentos', 'usuario_id', {
       type: Sequelize.INTEGER,
       references: {
-        model: 'usuarios',
+        model: {
+          tableName: 'usuarios',
+        },
         key: 'id'
       },
       allowNull: false
-
     });
 
   },

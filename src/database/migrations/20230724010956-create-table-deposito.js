@@ -12,10 +12,12 @@ module.exports = {
         unique: true,
         allowNull: false
       },
-      user_id: {
+      usuario_id: {
         type: Sequelize.INTEGER,
         references: {
-          model: 'usuarios',
+          model: {
+            tableName: 'usuarios',
+          },
           key: 'id'
         },
         allowNull: false

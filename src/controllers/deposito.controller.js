@@ -9,7 +9,7 @@ config();
 class DepositoController {
 
     // Função para cadastro de novo depósito no sistema
-    // Recebe através do body da request os dados: userId, razao, cnpf, nome
+    // Recebe através do body da request os dados: usuarioId, razao, cnpf, nome
     // email, fone, celular, cep, endereco, numero, bairro, cidade, estado,
     // complemento, latitude e longitude.
     // Caso passe nas validações cadastra novo depósito
@@ -17,7 +17,7 @@ class DepositoController {
 
         try {
             const {
-                userId,
+                usuarioId,
                 razao,
                 cnpj,
                 nome,
@@ -38,24 +38,24 @@ class DepositoController {
 
             // ------------------------------ Verificações de campos ------------------------------//
 
-            // Campo userId
-            if (!userId) {
+            // Campo usuarioId
+            if (!usuarioId) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
-                    cause: "O campo userId é obrigatório."
+                    cause: "O campo usuarioId é obrigatório."
                 })
             }
 
-            if (!validateOnlyNumbers(userId)) {
+            if (!validateOnlyNumbers(usuarioId)) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
-                    cause: "O campo userId deve conter somente números."
+                    cause: "O campo usuarioId deve conter somente números."
                 })
             }
 
             // Verifica a existência do id do usuário no banco de dados
-            const userIdExists = await Usuario.findOne({ where: { id: userId } });
-            if (!userIdExists) {
+            const usuarioIdExists = await Usuario.findOne({ where: { id: usuarioId } });
+            if (!usuarioIdExists) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
                     cause: "O usuário é inexistente."
@@ -63,7 +63,7 @@ class DepositoController {
             }
 
             // Verifica se o usuário está com o status definido como inativo
-            if (userIdExists.status === "Inativo") {
+            if (usuarioIdExists.status === "Inativo") {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar novo depósito.",
                     cause: "O usuário está inativo no sistema."
@@ -371,7 +371,7 @@ class DepositoController {
             })
 
             const data = {
-                userId,
+                usuarioId,
                 razao,
                 cnpj,
                 nome,
@@ -386,14 +386,15 @@ class DepositoController {
                 estado,
                 complemento,
                 latitude,
-                longitude
+                longitude,
+                status
             }
 
             // Caso não existam dados exluídos com soft delete, cria novo depósito no
             // banco de dados. Caso ja existiu atualiza os dados
             if (depositoExistBefore === 0) {
                 await Deposito.create({
-                    userId,
+                    usuarioId,
                     razao,
                     cnpj,
                     nome,
@@ -408,11 +409,12 @@ class DepositoController {
                     estado,
                     complemento,
                     latitude,
-                    longitude
+                    longitude,
+                    status
                 })
             } else {
                 await Deposito.update({
-                    userId,
+                    usuarioId,
                     razao,
                     cnpj,
                     nome,
@@ -427,7 +429,8 @@ class DepositoController {
                     estado,
                     complemento,
                     latitude,
-                    longitude
+                    longitude,
+                    status
                 }, {
                     where: {
                         cnpj,
@@ -764,6 +767,10 @@ class DepositoController {
         }
     }
 
+    // Função utilizada para deletar um medicamento.
+    // A definição do medicamento a ser deletado é feita através de seu ID 
+    // passado pelo params da request
+    // Caso seja validado o id é realizado um soft delete
     async deleteDeposito(req, res) {
         try {
 

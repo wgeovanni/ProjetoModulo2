@@ -1,9 +1,10 @@
 const { INTEGER, STRING, DATE, ENUM } = require('sequelize');
 const { connection } = require('../database/connection');
+const { Usuario } = require('./usuario');
 
 const Deposito = connection.define('deposito', {
 
-    userId: {
+    usuarioId: {
         type: INTEGER,
         references: {
             model: 'usuarios',
@@ -191,5 +192,7 @@ const Deposito = connection.define('deposito', {
         allowNull: true
     }
 }, { underscored: true, paranoid: true });
+
+Deposito.belongsTo(Usuario);
 
 module.exports = { Deposito };
