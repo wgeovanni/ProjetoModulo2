@@ -3,6 +3,7 @@ const { Op } = require('sequelize');
 const { validateEmail, validateOnlyNumbers, validateOnlyLetters, validateStringLenght, validateStatus } = require('../utils');
 const { config } = require('dotenv');
 const { Usuario } = require('../models/usuario');
+const { Deposito_Medicamento } = require('../models/deposito_medicamento');
 config();
 
 // Classe utilizada para representar a entidade Deposito

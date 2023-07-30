@@ -49,6 +49,14 @@ class Deposito_MedicamentoController {
                 })
             }
 
+            // Verifica se o deposito está com  o status inativo
+            if (depositoRazaoExist.status === "Inativo") {
+                return res.status(400).send({
+                    msg: "Não foi possível cadastrar medicamento no depósito.",
+                    cause: "Este depósito está com o status Inativo."
+                })
+            }
+
             // Verifica o campo medicamentoMedicamento
             if (!medicamentoMedicamento) {
                 return res.status(400).send({

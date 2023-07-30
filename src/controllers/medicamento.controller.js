@@ -2,6 +2,8 @@ const { Usuario } = require("../models/usuario");
 const { Medicamento } = require('../models/medicamento');
 const { Op } = require('sequelize');
 const { validateOnlyNumbers, validateStringLenght, validateUnDosagem, validateTipo, formatNumber } = require("../utils");
+const { Deposito_Medicamento } = require("../models/deposito_medicamento");
+const { Deposito } = require("../models/deposito");
 
 class MedicamentoController {
 
@@ -515,6 +517,27 @@ class MedicamentoController {
                 return res.status(400).send({
                     msg: "Não foi possível deletar o medicamento.",
                     cause: "Id do medicamento não consta no banco de dados."
+                })
+            }
+
+            // Verifica se o medicamento está cadastrado em um depósito
+            const medEmDeposito = await Medicamento.findOne({
+                where: {
+                    medicamento: idExist.medicamento
+                },
+                include: [{
+                    model: Deposito,
+                    through: {
+                        attributes: []
+                    }
+                }]
+            })
+
+            // Caso haja medicamento cadastrado em depósito
+            if (medEmDeposito.depositos.length !== 0) {
+                return res.status(409).send({
+                    msg: "Não foi possível excluir o depósito.",
+                    cause: "Não pode haver medicamentos cadastrados nos depósitos."
                 })
             }
 
