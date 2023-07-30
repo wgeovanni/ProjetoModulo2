@@ -1,5 +1,6 @@
 const { Usuario } = require("../models/usuario");
 const { Medicamento } = require('../models/medicamento');
+const { Op } = require('sequelize');
 const { validateOnlyNumbers, validateStringLenght, validateUnDosagem, validateTipo, formatNumber } = require("../utils");
 
 class MedicamentoController {
@@ -200,8 +201,52 @@ class MedicamentoController {
             const formatedPreco = formatNumber(preco);
             const formatedQuantidade = formatNumber(quantidade);
 
-            // Cria novo medicamento no banco de dados
-            const data = await Medicamento.create({
+            // Verifica se o medicamento com o nome recebido
+            // passou por soft delete
+            const medicamentoExistBefore = await Medicamento.restore({
+                where: {
+                    medicamento,
+                    deletedAt: {
+                        [Op.not]: null
+                    }
+                }
+            })
+
+            // Caso não existam dados exluídos com soft delete, cria novo medicamento no
+            // banco de dados. Caso ja existiu atualiza os dados. Retorna os dados.
+            if (medicamentoExistBefore === 0) {
+                const data = await Medicamento.create({
+                    userId,
+                    medicamento,
+                    laboratorio,
+                    descricao,
+                    dosagem: formatedDosagem,
+                    unDosagem,
+                    tipo,
+                    preco: formatedPreco,
+                    quantidade: formatedQuantidade
+                })
+                return res.status(201).send(data);
+            } else {
+                await Medicamento.update({
+                    userId,
+                    medicamento,
+                    laboratorio,
+                    descricao,
+                    dosagem: formatedDosagem,
+                    unDosagem,
+                    tipo,
+                    preco: formatedPreco,
+                    quantidade: formatedQuantidade
+                }, {
+                    where: {
+                        medicamento
+                    }
+                })
+            }
+
+            // Dados a serem enviados
+            const data = {
                 userId,
                 medicamento,
                 laboratorio,
@@ -211,8 +256,7 @@ class MedicamentoController {
                 tipo,
                 preco: formatedPreco,
                 quantidade: formatedQuantidade
-            })
-
+            }
             return res.status(201).send(data);
 
         } catch (error) {
