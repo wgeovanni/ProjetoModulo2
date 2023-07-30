@@ -1,4 +1,5 @@
 const { Deposito } = require('../models/deposito');
+const { Op } = require('sequelize');
 const { validateEmail, validateOnlyNumbers, validateOnlyLetters, validateStringLenght, validateStatus } = require('../utils');
 const { config } = require('dotenv');
 const { Usuario } = require('../models/usuario');
@@ -357,8 +358,19 @@ class DepositoController {
 
             //-----------------------------Fim de verificação de dados-----------------------------//
 
-            // Criação de novo depósito no banco de dados
-            const data = await Deposito.create({
+            // Verifica se o depósito com o cnpj e razão social recebidos
+            // passou por soft delete
+            const depositoExistBefore = await Deposito.restore({
+                where: {
+                    cnpj,
+                    razao,
+                    deletedAt: {
+                        [Op.not]: null
+                    }
+                }
+            })
+
+            const data = {
                 userId,
                 razao,
                 cnpj,
@@ -375,8 +387,54 @@ class DepositoController {
                 complemento,
                 latitude,
                 longitude
-            })
+            }
 
+            // Caso não existam dados exluídos com soft delete, cria novo depósito no
+            // banco de dados. Caso ja existiu atualiza os dados
+            if (depositoExistBefore === 0) {
+                await Deposito.create({
+                    userId,
+                    razao,
+                    cnpj,
+                    nome,
+                    email,
+                    fone,
+                    celular,
+                    cep,
+                    endereco,
+                    numero,
+                    bairro,
+                    cidade,
+                    estado,
+                    complemento,
+                    latitude,
+                    longitude
+                })
+            } else {
+                await Deposito.update({
+                    userId,
+                    razao,
+                    cnpj,
+                    nome,
+                    email,
+                    fone,
+                    celular,
+                    cep,
+                    endereco,
+                    numero,
+                    bairro,
+                    cidade,
+                    estado,
+                    complemento,
+                    latitude,
+                    longitude
+                }, {
+                    where: {
+                        cnpj,
+                        razao
+                    }
+                })
+            }
             return res.status(201).send(data);
         } catch (error) {
             return res.status(400).send({
