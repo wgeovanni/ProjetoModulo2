@@ -3,14 +3,6 @@ const { connection } = require('../database/connection');
 
 const Usuarios_Depositos_Medicamentos = connection.define('usuarios_depositos_medicamentos', {
 
-    userId: {
-        type: INTEGER,
-        references: {
-            model: 'usuarios',
-            key: 'id'
-        },
-        allowNull: false
-    },
     depositoId: {
         type: INTEGER,
         references: {

@@ -12,18 +12,6 @@ module.exports = {
         autoIncrement: true,
         unique: true
       },
-      usuario_id: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: {
-            tableName: 'usuarios'
-          },
-          key: 'id'
-        },
-        allowNull: false,
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
-      },
       deposito_id: {
         type: Sequelize.INTEGER,
         references: {
