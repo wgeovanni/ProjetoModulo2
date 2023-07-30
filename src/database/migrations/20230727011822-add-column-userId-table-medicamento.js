@@ -12,7 +12,9 @@ module.exports = {
         },
         key: 'id'
       },
-      allowNull: false
+      allowNull: false,
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
     });
 
   },

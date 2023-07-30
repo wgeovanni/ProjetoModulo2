@@ -26,7 +26,8 @@ module.exports = {
       },
       razao: {
         type: Sequelize.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true
       },
       cnpj: {
         type: Sequelize.STRING,

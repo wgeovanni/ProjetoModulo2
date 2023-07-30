@@ -4,7 +4,7 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
 
-    await queryInterface.createTable('usuarios_depositos_medicamentos', {
+    await queryInterface.createTable('depositos_medicamentos', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -13,7 +13,7 @@ module.exports = {
         unique: true
       },
       deposito_razao: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING,
         references: {
           model: {
             tableName: 'depositos'
@@ -24,13 +24,13 @@ module.exports = {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      medicamento_nome: {
-        type: Sequelize.INTEGER,
+      medicamento_medicamento: {
+        type: Sequelize.STRING,
         references: {
           model: {
             tableName: 'medicamentos'
           },
-          key: 'nome'
+          key: 'medicamento'
         },
         allowNull: false,
         onUpdate: 'CASCADE',
@@ -57,7 +57,7 @@ module.exports = {
 
   async down(queryInterface, Sequelize) {
 
-    await queryInterface.dropTable('usuarios_depositos_medicamentos');
+    await queryInterface.dropTable('depositos_medicamentos');
 
   }
 };

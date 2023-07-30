@@ -196,7 +196,7 @@ const Deposito = connection.define('deposito', {
 }, { underscored: true, paranoid: true });
 
 Deposito.belongsTo(Usuario);
-Deposito.belongsToMany(Medicamento, { through: Deposito_Medicamento, sourceKey: 'razao', targetKey: 'nome' });
-Medicamento.belongsToMany(Deposito, { through: Deposito_Medicamento, sourceKey: 'nome', targetKey: 'razao' });
+Deposito.belongsToMany(Medicamento, { through: Deposito_Medicamento, sourceKey: 'razao', targetKey: 'medicamento' });
+Medicamento.belongsToMany(Deposito, { through: Deposito_Medicamento, sourceKey: 'medicamento', targetKey: 'razao' });
 
 module.exports = { Deposito };

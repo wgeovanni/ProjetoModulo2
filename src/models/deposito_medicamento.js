@@ -1,21 +1,21 @@
-const { STRING, INTEGER } = require('sequelize');
+const { STRING, INTEGER, DATE } = require('sequelize');
 const { connection } = require('../database/connection');
 
 const Deposito_Medicamento = connection.define('depositos_medicamentos', {
 
     depositoRazao: {
-        type: INTEGER,
+        type: STRING,
         references: {
             model: 'depositos',
             key: 'razao'
         },
         allowNull: false
     },
-    medicamentoNome: {
-        type: INTEGER,
+    medicamentoMedicamento: {
+        type: STRING,
         references: {
             model: 'medicamentos',
-            key: 'nome'
+            key: 'medicamento'
         },
         allowNull: false
     },
@@ -24,15 +24,15 @@ const Deposito_Medicamento = connection.define('depositos_medicamentos', {
         allowNull: false
     },
     createdAt: {
-        type: Sequelize.DATE,
+        type: DATE,
         allowNull: false
     },
     updatedAt: {
-        type: Sequelize.DATE,
+        type: DATE,
         allowNull: false
     },
     deletedAt: {
-        type: Sequelize.DATE,
+        type: DATE,
         allowNull: true
     }
 }, { underscored: true, paranoid: true });
