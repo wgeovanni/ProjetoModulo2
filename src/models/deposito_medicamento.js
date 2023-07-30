@@ -1,21 +1,21 @@
 const { STRING, INTEGER } = require('sequelize');
 const { connection } = require('../database/connection');
 
-const Usuarios_Depositos_Medicamentos = connection.define('usuarios_depositos_medicamentos', {
+const Deposito_Medicamento = connection.define('depositos_medicamentos', {
 
-    depositoId: {
+    depositoRazao: {
         type: INTEGER,
         references: {
             model: 'depositos',
-            key: 'key'
+            key: 'razao'
         },
         allowNull: false
     },
-    medicamentoID: {
+    medicamentoNome: {
         type: INTEGER,
         references: {
             model: 'medicamentos',
-            key: 'id'
+            key: 'nome'
         },
         allowNull: false
     },
@@ -37,4 +37,4 @@ const Usuarios_Depositos_Medicamentos = connection.define('usuarios_depositos_me
     }
 }, { underscored: true, paranoid: true });
 
-module.exports = { Usuarios_Depositos_Medicamentos };
+module.exports = { Deposito_Medicamento };

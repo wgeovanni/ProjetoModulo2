@@ -12,25 +12,25 @@ module.exports = {
         autoIncrement: true,
         unique: true
       },
-      deposito_id: {
+      deposito_razao: {
         type: Sequelize.INTEGER,
         references: {
           model: {
             tableName: 'depositos'
           },
-          key: 'id'
+          key: 'razao'
         },
         allowNull: false,
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
       },
-      medicamento_id: {
+      medicamento_nome: {
         type: Sequelize.INTEGER,
         references: {
           model: {
             tableName: 'medicamentos'
           },
-          key: 'id'
+          key: 'nome'
         },
         allowNull: false,
         onUpdate: 'CASCADE',
