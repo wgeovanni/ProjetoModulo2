@@ -536,7 +536,7 @@ class MedicamentoController {
             // Caso haja medicamento cadastrado em depósito
             if (medEmDeposito.depositos.length !== 0) {
                 return res.status(409).send({
-                    msg: "Não foi possível excluir o depósito.",
+                    msg: "Não foi possível deletar o medicamento.",
                     cause: "Não pode haver medicamentos cadastrados nos depósitos."
                 })
             }

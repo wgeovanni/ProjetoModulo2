@@ -4,6 +4,7 @@ const { validateEmail, validateOnlyNumbers, validateOnlyLetters, validateStringL
 const { config } = require('dotenv');
 const { Usuario } = require('../models/usuario');
 const { Deposito_Medicamento } = require('../models/deposito_medicamento');
+const { Medicamento } = require('../models/medicamento');
 config();
 
 // Classe utilizada para representar a entidade Deposito
@@ -671,6 +672,29 @@ class DepositoController {
 
             // ------------------------------ Fim de verificação de campos ------------------------------//
 
+            // Verifica se o medicamento está cadastrado em um depósito
+            const depEmUso = await Deposito.findOne({
+                where: {
+                    razao: depositoIdExist.razao
+                },
+                include: [{
+                    model: Medicamento,
+                    through: {
+                        attributes: []
+                    }
+                }]
+            })
+
+            console.log(depEmUso)
+
+            // Caso haja medicamento cadastrado em depósito
+            if (depEmUso.medicamentos.length !== 0) {
+                return res.status(409).send({
+                    msg: "Não foi possível excluir o depósito.",
+                    cause: "Não pode haver medicamentos cadastrados no depósito."
+                })
+            }
+
             // Realiza a atualização no banco de dados
             await Deposito.update({ status }, { where: { id } });
 
@@ -806,7 +830,6 @@ class DepositoController {
                 return res.status(400).send({
                     msg: "Não foi possível excluir o depósito.",
                     cause: "O status do depósito deve ser Inativo."
-
                 })
             }
 

@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const { Deposito } = require("../models/deposito");
 const { Deposito_Medicamento } = require("../models/deposito_medicamento");
 const { Medicamento } = require('../models/medicamento');
@@ -390,6 +391,67 @@ class Deposito_MedicamentoController {
         } catch (error) {
             return res.status(400).send({
                 msg: "Não foi possível listar medicamento no depósito.",
+                cause: error.message
+            })
+        }
+    }
+
+    // Função para deleção de medicamento cadastrado em um depósito no banco de dados
+    // Recebe no params a id da relação entre medicamento e depósito
+    //  e caso exista no banco de dados realiza um soft delete
+    async deleteOneDepMed(req, res) {
+        try {
+
+            const { id } = req.params;
+
+            // Verificações do params id
+            if (!id) {
+                return res.status(400).send({
+                    msg: "Não é possível deletar estes dados.",
+                    cause: "O params id é obrigatório."
+                })
+            }
+
+            if (!validateOnlyNumbers(id)) {
+                return res.status(400).send({
+                    msg: "Não é possível deletar estes dados.",
+                    cause: "O id deve ser um numeral."
+                })
+            }
+
+            // Verifica se o id consta no banco de dados
+            const idExist = await Deposito_Medicamento.findOne({ where: { id } });
+            if (idExist === null) {
+                return res.status(400).send({
+                    msg: "Não é possível deletar estes dados.",
+                    cause: "Id não consta no banco de dados."
+                })
+            }
+
+            // Verifica se tem um medicamento cadastrado no depósito
+            const quantExist = await Deposito_Medicamento.findOne({
+                where: {
+                    id,
+                    quantidade: {
+                        [Op.gt]: 0
+                    }
+                }
+            })
+
+            // Caso existam medicamentos no depósito não efetua a deleção
+            if (quantExist !== null) {
+                return res.status(400).send({
+                    msg: "Não é possível deletar estes dados.",
+                    cause: "Existem medicamentos cadastrados no depósito."
+                })
+            }
+
+            // Efetua a deleção lógica
+            Deposito_Medicamento.destroy({ where: { id } });
+            res.status(204).send();
+        } catch (error) {
+            return res.status(400).send({
+                msg: "Não é possível deletar estes dados.",
                 cause: error.message
             })
         }
