@@ -45,10 +45,10 @@ class UsuarioControler {
                 })
             }
 
-            if (!validateStringLenght(nome, 2, 50)) {
+            if (!validateStringLenght(nome, 2, 20)) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar usuário.",
-                    cause: "Campo nome deve conter entre 2 e 50 caracteres."
+                    cause: "Campo nome deve conter entre 2 e 20 caracteres."
                 })
             }
 
@@ -67,10 +67,10 @@ class UsuarioControler {
                 })
             }
 
-            if (!validateStringLenght(sobrenome, 2, 50)) {
+            if (!validateStringLenght(sobrenome, 2, 20)) {
                 return res.status(400).send({
                     msg: "Não foi possível cadastrar usuário.",
-                    cause: "Campo sobrenome deve conter entre 2 e 50 caracteres."
+                    cause: "Campo sobrenome deve conter entre 2 e 20 caracteres."
                 })
             }
 
