@@ -685,8 +685,6 @@ class DepositoController {
                 }]
             })
 
-            console.log(depEmUso)
-
             // Caso haja medicamento cadastrado em depósito
             if (depEmUso.medicamentos.length !== 0) {
                 return res.status(409).send({

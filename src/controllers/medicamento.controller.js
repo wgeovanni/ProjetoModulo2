@@ -366,10 +366,6 @@ class MedicamentoController {
 
             // ------------------------------ Fim de verificação de campos ------------------------//
 
-            // Formatação de campos numericos
-            const formatedPreco = formatNumber(preco);
-            const formatedQuantidade = formatNumber(quantidade);
-
             // Atualização dos dados no banco de dados
             await Medicamento.update({
                 descricao,
