@@ -1,6 +1,7 @@
 const express = require('express');
 const { connection } = require('./database/connection');
 const routes = require('./routes/index');
+const cors = require('cors')
 
 class Server {
 
@@ -15,6 +16,7 @@ class Server {
     // Indica quais middlewares serão usados
     async middlewares(server) {
         server.use(express.json());
+        server.use(cors())
     }
 
     // Conecta ao banco de dados
