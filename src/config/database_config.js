@@ -2,7 +2,7 @@
 const { config } = require('dotenv');
 config();
 
-const { DIALECT, HOST, USERNAMEDB, PASSWORDDB, DATABASE, PORT, SECRET_KEY } = process.env;
+const { DIALECT, HOSTDB, USERNAMEDB, PASSWORDDB, DATABASE, PORTDB, SECRET_KEY } = process.env;
 
 module.exports = {
 
