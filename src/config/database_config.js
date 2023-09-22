@@ -7,11 +7,11 @@ const { DIALECT, HOSTDB, USERNAMEDB, PASSWORDDB, DATABASE, PORTDB, SECRET_KEY } 
 module.exports = {
 
     dialect: DIALECT,       // Recebe o tipo de banco de dados usado
-    host: HOST,             // Recebe qual servidor está sendo usado
+    host: HOSTDB,             // Recebe qual servidor está sendo usado
     username: USERNAMEDB,   // Nome do usuário no Postgres
     password: PASSWORDDB,   // Senha do usuário no Postgres
     database: DATABASE,     // Nome do banco de dados usado
-    port: PORT,             // Porta para conexão com banco de dados
+    port: PORTDB,             // Porta para conexão com banco de dados
     secret: SECRET_KEY,     // Palavra-chave do token
 
     //Configurações opcionais da aplicação
