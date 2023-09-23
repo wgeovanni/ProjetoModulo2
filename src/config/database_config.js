@@ -13,6 +13,11 @@ module.exports = {
     database: DATABASE,     // Nome do banco de dados usado
     port: PORTDB,             // Porta para conexão com banco de dados
     secret: SECRET_KEY,     // Palavra-chave do token
+    dialectOptions: {
+        ssl: {
+            require: false
+        }
+    },     // Palavra-chave do token
 
     //Configurações opcionais da aplicação
     define: {
